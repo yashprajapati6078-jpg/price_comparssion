@@ -1,0 +1,154 @@
+<!-- RigRate AI Shopping Assistant Widget (Powered by Yash) -->
+<div id="rigrateAiWidgetContainer">
+    <!-- Proactive Popup Help Bubble -->
+    <div id="rigrateAiPromptBubble" class="ai-prompt-bubble shadow-lg">
+        <button type="button" id="rigrateAiBubbleClose" class="ai-bubble-close-btn" aria-label="Dismiss">&times;</button>
+        <div class="d-flex align-items-center gap-1.5 mb-1.5">
+            <span class="ai-avatar-icon-xs"><i class="bi bi-robot"></i></span>
+            <span class="fw-bold fs-xs text-dark">RigRate AI Assistant</span>
+            <span class="badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill fs-xxs fw-bold px-1.5 py-0.2 ms-auto">by Yash</span>
+        </div>
+        <p class="mb-2 fs-xs fw-semibold text-secondary">What do you need help with today?</p>
+        <div class="d-flex flex-column gap-1.5 ai-quick-help-menu">
+            <button type="button" class="btn btn-sm btn-white border text-start fs-xs py-1.5 px-2.5 rounded-3 d-flex align-items-center justify-content-between ai-select-help-btn" data-query="Show me the best electronics deals and lowest prices on RigRate">
+                <span class="d-flex align-items-center gap-1.5"><i class="bi bi-tag-fill text-danger"></i> Find Best Deals & Prices</span>
+                <i class="bi bi-chevron-right fs-xxs text-muted"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-white border text-start fs-xs py-1.5 px-2.5 rounded-3 d-flex align-items-center justify-content-between ai-select-help-btn" data-query="How do I compare prices between Amazon, Flipkart, Croma, and other stores?">
+                <span class="d-flex align-items-center gap-1.5"><i class="bi bi-arrow-left-right text-primary"></i> Compare Stores & Specs</span>
+                <i class="bi bi-chevron-right fs-xxs text-muted"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-white border text-start fs-xs py-1.5 px-2.5 rounded-3 d-flex align-items-center justify-content-between ai-select-help-btn" data-query="How does Wishlist work on RigRate?">
+                <span class="d-flex align-items-center gap-1.5"><i class="bi bi-heart-fill text-danger"></i> Wishlist & Saved Items</span>
+                <i class="bi bi-chevron-right fs-xxs text-muted"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-white border text-start fs-xs py-1.5 px-2.5 rounded-3 d-flex align-items-center justify-content-between ai-select-help-btn" data-query="How do orders, deliveries and retailer purchases work on RigRate?">
+                <span class="d-flex align-items-center gap-1.5"><i class="bi bi-bag-check-fill text-success"></i> Orders & How to Buy</span>
+                <i class="bi bi-chevron-right fs-xxs text-muted"></i>
+            </button>
+        </div>
+        <div class="ai-bubble-pointer"></div>
+    </div>
+
+    <!-- Floating Trigger Launcher Button -->
+    <button id="rigrateAiLauncherBtn" class="shadow-lg" type="button" aria-label="Open RigRate AI Assistant" title="Chat with RigRate AI (Powered by Yash)">
+        <span class="ai-sparkle-glow"></span>
+        <div class="ai-launcher-inner d-flex align-items-center gap-2">
+            <span class="ai-avatar-icon">
+                <i class="bi bi-robot"></i>
+            </span>
+            <span class="ai-launcher-label fw-bold d-none d-sm-inline">RigRate AI</span>
+            <span class="badge bg-warning text-dark rounded-pill fs-xxs fw-bold px-2 py-0.5 d-none d-md-inline">AI ASSISTANT</span>
+        </div>
+        <span class="ai-online-dot"></span>
+    </button>
+
+    <!-- Chat Modal Window -->
+    <div id="rigrateAiChatWindow" class="d-none shadow-2xl rounded-4 overflow-hidden border">
+        <!-- Chat Header -->
+        <div class="ai-chat-header d-flex align-items-center justify-content-between px-3 py-2.5">
+            <div class="d-flex align-items-center gap-2.5">
+                <div class="ai-header-avatar position-relative">
+                    <i class="bi bi-robot fs-5 text-white"></i>
+                    <span class="ai-status-indicator"></span>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h6 class="mb-0 fw-bold text-white fs-6">RigRate AI</h6>
+                        <span class="badge bg-light text-primary rounded-pill fs-xxs fw-bold px-2 py-0.5">Online</span>
+                    </div>
+                    <small class="ai-header-subtext d-block">Personal Support & Shopping • <span class="fw-semibold text-warning">Powered by Yash</span></small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-1">
+                <button type="button" id="rigrateAiClearBtn" class="btn btn-sm btn-icon-glass text-white-50 hover-white p-1" title="Clear Chat History">
+                    <i class="bi bi-arrow-counterclockwise fs-6"></i>
+                </button>
+                <button type="button" id="rigrateAiMinimizeBtn" class="btn btn-sm btn-icon-glass text-white-50 hover-white p-1" title="Minimize Chat">
+                    <i class="bi bi-dash-lg fs-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Messages Container -->
+        <div id="rigrateAiMessagesList" class="ai-chat-body p-3">
+            <!-- Initial Assistant Greeting -->
+            <div class="ai-message-row ai-row-assistant mb-3">
+                <div class="ai-msg-avatar">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <div class="ai-msg-bubble shadow-xs">
+                    <p class="mb-1 fw-semibold">Hi! I'm <strong>RigRate AI</strong> 👋 *(Powered by Yash)*.</p>
+                    <p class="mb-2 fs-sm text-secondary">I am your dedicated assistant for **RigRate** price comparison and platform support.</p>
+                    <div class="p-2 bg-light rounded-3 border mb-2 fs-xs">
+                        <span class="fw-bold text-dark d-block mb-1.5"><i class="bi bi-question-circle-fill text-primary me-1"></i>Select what you need help with:</span>
+                        <div class="d-flex flex-column gap-1">
+                            <button type="button" class="btn btn-sm btn-white border text-start fs-xxs py-1 px-2 rounded-2 ai-chip-btn" data-query="Show me top laptop and phone deals on RigRate">
+                                🔍 <strong>Find Deals & Lowest Prices</strong>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-white border text-start fs-xxs py-1 px-2 rounded-2 ai-chip-btn" data-query="How do I compare 2 products or check store prices?">
+                                ⚖️ <strong>Compare Products / Stores</strong>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-white border text-start fs-xxs py-1 px-2 rounded-2 ai-chip-btn" data-query="How does Wishlist work on RigRate?">
+                                ❤️ <strong>Wishlist & Account Support</strong>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-white border text-start fs-xxs py-1 px-2 rounded-2 ai-chip-btn" data-query="How do purchases, shipping and retailer links work?">
+                                🛒 <strong>Orders & How to Buy</strong>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-white border text-start fs-xxs py-1 px-2 rounded-2 ai-chip-btn" data-query="How can I contact the RigRate team or Yash for support?">
+                                📞 <strong>Contact Human Support</strong>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="mb-0 fs-sm text-secondary">Or type any electronics or RigRate question below!</p>
+                </div>
+            </div>
+
+            <!-- Quick Suggestion Pills -->
+            <div id="rigrateAiSuggestions" class="d-flex flex-wrap gap-1.5 mb-3 ps-5">
+                <button type="button" class="btn btn-sm btn-light border rounded-pill fs-xs text-secondary ai-chip-btn" data-query="Best laptops under ₹60,000 for coding">
+                    💻 Laptops under ₹60,000
+                </button>
+                <button type="button" class="btn btn-sm btn-light border rounded-pill fs-xs text-secondary ai-chip-btn" data-query="Compare RTX 4060 vs RTX 4070 prices">
+                    ⚖️ RTX 4060 vs 4070
+                </button>
+                <button type="button" class="btn btn-sm btn-light border rounded-pill fs-xs text-secondary ai-chip-btn" data-query="Is iPhone 15 at current price a good deal?">
+                    🏷️ Is iPhone 15 a good deal?
+                </button>
+                <button type="button" class="btn btn-sm btn-light border rounded-pill fs-xs text-secondary ai-chip-btn" data-query="How do I compare products on RigRate?">
+                    ⚡ How to compare
+                </button>
+                <button type="button" class="btn btn-sm btn-light border rounded-pill fs-xs text-secondary ai-chip-btn" data-query="How does Wishlist work on RigRate?">
+                    ❤️ Wishlist help
+                </button>
+            </div>
+        </div>
+
+        <!-- Typing Indicator (Hidden by default) -->
+        <div id="rigrateAiTypingIndicator" class="ai-typing-row d-none px-3 pb-2">
+            <div class="ai-msg-avatar-sm me-2">
+                <i class="bi bi-robot fs-xs"></i>
+            </div>
+            <div class="ai-typing-bubble">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            </div>
+        </div>
+
+        <!-- Chat Input Footer -->
+        <div class="ai-chat-footer p-2.5 border-top bg-white">
+            <form id="rigrateAiForm" class="d-flex align-items-center gap-2 mb-1" onsubmit="event.preventDefault(); window.sendRigRateAiMessage();">
+                <input type="text" id="rigrateAiInput" class="form-control form-control-sm rounded-pill px-3 py-2 border-0 bg-light shadow-none" placeholder="Ask about products, deals, or RigRate support..." autocomplete="off" required>
+                <button type="submit" id="rigrateAiSendBtn" class="btn btn-primary btn-sm rounded-circle p-2 shadow-xs d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Send Message">
+                    <i class="bi bi-send-fill fs-xs"></i>
+                </button>
+            </form>
+            <div class="text-center">
+                <small class="ai-footer-credit">
+                    <i class="bi bi-shield-check text-success me-1"></i>RigRate AI • <span class="fw-semibold text-dark">Powered by Yash</span>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>

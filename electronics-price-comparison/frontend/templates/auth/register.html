@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account | ElectroCompare{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="bg-success-subtle text-success d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 60px; height: 60px;">
+                            <i class="bi bi-person-plus fs-2"></i>
+                        </div>
+                        <h3 class="fw-bold">Create an Account</h3>
+                        <p class="text-muted fs-sm">Get price drop notifications and save items to your wishlist</p>
+                    </div>
+
+                    <form action="{{ url_for('register') }}" method="POST">
+                        <div class="mb-3">
+                            <label for="regUsername" class="form-label fw-semibold">Username</label>
+                            <input type="text" name="username" id="regUsername" class="form-control bg-light" placeholder="Choose a username" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="regEmail" class="form-label fw-semibold">Email Address</label>
+                            <input type="email" name="email" id="regEmail" class="form-control bg-light" placeholder="name@example.com" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="regPassword" class="form-label fw-semibold">Password</label>
+                            <input type="password" name="password" id="regPassword" class="form-control bg-light" placeholder="Minimum 6 characters" required minlength="6">
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 py-2 rounded-pill fw-bold mb-3">
+                            Register Account <i class="bi bi-check-lg ms-1"></i>
+                        </button>
+                    </form>
+
+                    <div class="text-center pt-3 border-top">
+                        <p class="text-muted fs-sm mb-0">
+                            Already have an account? <a href="{{ url_for('login') }}" class="fw-bold text-primary text-decoration-none">Login here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

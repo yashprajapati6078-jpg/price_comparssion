@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}My Wishlist ❤️ | ElectroCompare{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1"><i class="bi bi-heart-fill text-danger me-2"></i>My Wishlist</h1>
+            <p class="text-muted fs-sm mb-0">Track and quickly access your saved electronics products</p>
+        </div>
+        <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill fw-bold">{{ wishlist_items|length }} Items Saved</span>
+    </div>
+
+    {% if wishlist_items %}
+        <div class="row g-4">
+            {% for item in wishlist_items %}
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden product-card position-relative">
+                    <div class="position-relative text-center p-4 bg-light">
+                        <img src="{{ item.product.image }}" class="card-img-top" alt="{{ item.product.name }}" style="height: 160px; object-fit: contain;">
+                    </div>
+
+                    <div class="card-body p-4 d-flex flex-column">
+                        <span class="text-muted fs-xs fw-semibold text-uppercase mb-1">{{ item.product.brand }}</span>
+                        <h6 class="card-title fw-bold text-truncate-2 mb-3">
+                            <a href="{{ url_for('product_details', product_id=item.product.id) }}" class="text-dark text-decoration-none">{{ item.product.name }}</a>
+                        </h6>
+
+                        <div class="mt-auto pt-3 border-top d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="fs-xs text-muted d-block">Lowest Price</span>
+                                <div class="fs-5 fw-bold text-success">
+                                    ₹{{ "{:,.0f}".format(item.product.lowest_price) }}
+                                </div>
+                            </div>
+
+                            <form action="{{ url_for('toggle_wishlist_id', product_id=item.product.id) }}" method="POST">
+                                <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle p-2" title="Remove from wishlist">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm rounded-4 text-center py-5">
+            <div class="card-body">
+                <i class="bi bi-heart text-muted display-3 mb-3"></i>
+                <h4 class="fw-bold">Your Wishlist is Empty</h4>
+                <p class="text-muted fs-sm">Browse our products and click the heart icon to save electronics here!</p>
+                <a href="{{ url_for('search') }}" class="btn btn-primary rounded-pill px-4">Browse Products</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

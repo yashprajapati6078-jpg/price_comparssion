@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard | ElectroCompare Management{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Admin Header -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1"><i class="bi bi-speedometer2 text-primary me-2"></i>Admin Dashboard</h1>
+            <p class="text-muted fs-sm mb-0">System overview, product management, and scraper controls</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <!-- Trigger Manual Scrape Button -->
+            <form action="{{ url_for('admin_trigger_scrape') }}" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-warning text-dark fw-bold rounded-pill px-4" onclick="this.innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span>Scraping Live Stores...';">
+                    <i class="bi bi-arrow-repeat me-1"></i>Scrape Now
+                </button>
+            </form>
+
+            <a href="{{ url_for('admin_products') }}" class="btn btn-primary rounded-pill px-3">
+                <i class="bi bi-plus-circle me-1"></i>Manage Products
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Stats Metric Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-white bg-primary">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-white-50 fs-xs text-uppercase fw-bold">Total Products</span>
+                        <h2 class="display-6 fw-bold mb-0 mt-1">{{ total_products }}</h2>
+                    </div>
+                    <i class="bi bi-cpu fs-1 text-white-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-white bg-success">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-white-50 fs-xs text-uppercase fw-bold">Categories</span>
+                        <h2 class="display-6 fw-bold mb-0 mt-1">{{ total_categories }}</h2>
+                    </div>
+                    <i class="bi bi-grid-fill fs-1 text-white-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-white bg-info">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-white-50 fs-xs text-uppercase fw-bold">Partner Retailers</span>
+                        <h2 class="display-6 fw-bold mb-0 mt-1">{{ total_retailers }}</h2>
+                    </div>
+                    <i class="bi bi-shop fs-1 text-white-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-white bg-warning">
+                <div class="d-flex align-items-center justify-content-between text-dark">
+                    <div>
+                        <span class="text-dark-50 fs-xs text-uppercase fw-bold">Active Price Alerts</span>
+                        <h2 class="display-6 fw-bold mb-0 mt-1 text-dark">{{ active_alerts }}</h2>
+                    </div>
+                    <i class="bi bi-bell-fill fs-1 text-dark-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation Panels -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-2"><i class="bi bi-box-seam text-primary me-2"></i>Catalog</h5>
+                    <p class="text-muted fs-xs mb-3">Add and manage electronics products and retailer prices.</p>
+                    <a href="{{ url_for('admin_products') }}" class="btn btn-outline-primary btn-sm w-100 rounded-pill fw-bold">Manage Products</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-2"><i class="bi bi-tags text-success me-2"></i>Categories</h5>
+                    <p class="text-muted fs-xs mb-3">Manage electronic product categories, icons, and descriptions.</p>
+                    <a href="{{ url_for('admin_categories') }}" class="btn btn-outline-success btn-sm w-100 rounded-pill fw-bold">Categories</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-2"><i class="bi bi-shop-window text-info me-2"></i>Stores</h5>
+                    <p class="text-muted fs-xs mb-3">Configure tracked retailer stores (Amazon, Flipkart, etc.).</p>
+                    <a href="{{ url_for('admin_retailers') }}" class="btn btn-outline-info btn-sm w-100 rounded-pill fw-bold">Manage Stores</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 border-primary border-2">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-2"><i class="bi bi-search text-primary me-2"></i>Live Catalog</h5>
+                    <p class="text-muted fs-xs mb-3">Browse and inspect electronics catalog and live store links.</p>
+                    <a href="{{ url_for('search') }}" class="btn btn-primary btn-sm w-100 rounded-pill fw-bold">View Catalog</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Scrape & System Log Activity -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3 px-4">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-activity text-primary me-2"></i>System Status & Scraper Engine</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="badge bg-success p-2 rounded-circle"><i class="bi bi-check-lg fs-5"></i></span>
+                    <div>
+                        <h6 class="fw-bold mb-0">APScheduler Price Monitoring Status</h6>
+                        <small class="text-muted">Runs every 3 hours automatically | RapidFuzz title matching active</small>
+                    </div>
+                </div>
+                <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill fw-bold">ACTIVE & RUNNING</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

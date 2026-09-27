@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+
+{% block title %}RigRate - #1 PC Component Price Comparison Engine{% endblock %}
+
+{% block content %}
+<!-- Fresh Bright Hero Section with Centered 3D Search Bar -->
+<section class="hero-section-bright py-5 position-relative overflow-hidden">
+    <div class="container py-lg-4 text-center">
+        <!-- Live Ticker Badge -->
+        <div class="d-inline-flex align-items-center gap-2 bg-white border shadow-xs px-3.5 py-2 rounded-pill mb-4">
+            <span class="badge bg-danger text-white fw-bold rounded-pill"><i class="bi bi-fire me-1"></i>LIVE PRICE TRACKER</span>
+            <span class="fs-xs fw-bold text-dark">🔥 Comparing live prices across Amazon, Flipkart, Croma, Reliance Digital & Vijay Sales</span>
+        </div>
+
+        <!-- Main Centered Heading -->
+        <h1 class="display-3 fw-extrabold mb-3 text-dark max-w-2xl mx-auto" style="max-width: 860px; letter-spacing: -1.5px; line-height: 1.15;">
+            RigRate: Compare Live Prices for <span class="text-gradient-primary">Electronics & Tech</span>
+        </h1>
+        <p class="lead text-secondary max-w-xl mx-auto fs-5 mb-4" style="max-width: 760px; line-height: 1.6;">
+            Automated price comparison across <strong>Amazon, Flipkart, Croma, Reliance Digital</strong> & <strong>Vijay Sales</strong> powered by real-time tracking.
+        </p>
+
+        <!-- Prominent Centered 3D Hero Search Box -->
+        <div class="max-w-xl mx-auto mb-4" style="max-width: 720px;">
+            <form action="{{ url_for('search') }}" method="GET">
+                <div class="hero-search-box-3d p-2 d-flex align-items-center bg-white">
+                    <div class="d-flex align-items-center flex-grow-1 ps-3.5 pe-2">
+                        <i class="bi bi-search text-primary fs-4 me-3"></i>
+                        <input type="text" name="q" class="form-control border-0 shadow-none bg-transparent fs-5 text-dark px-1 py-2" placeholder="Search 'RTX 4090', 'Ryzen 7800X3D', '990 Pro SSD', 'B650'..." required>
+                    </div>
+                    <button class="btn btn-primary btn-lg rounded-pill px-4.5 py-2.5 fw-bold text-nowrap shadow-sm d-inline-flex align-items-center gap-2" type="submit">
+                        <i class="bi bi-search fs-6"></i><span>Compare Prices</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Popular Category Pills prioritizing PC Components -->
+        <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap text-dark fs-sm">
+            <span class="fw-bold text-muted me-1"><i class="bi bi-fire text-warning me-1"></i>Popular Hardware:</span>
+            <a href="{{ url_for('search', category='PC Components', subcat='GPU') }}" class="btn btn-sm btn-white rounded-pill px-3 py-1.5 fw-semibold text-dark border shadow-xs">
+                ⚡ GPUs & Graphics Cards
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='CPU') }}" class="btn btn-sm btn-white rounded-pill px-3 py-1.5 fw-semibold text-dark border shadow-xs">
+                🧠 CPUs & Processors
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='SSD') }}" class="btn btn-sm btn-white rounded-pill px-3 py-1.5 fw-semibold text-dark border shadow-xs">
+                ⚡ NVMe SSDs & Storage
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='RAM') }}" class="btn btn-sm btn-white rounded-pill px-3 py-1.5 fw-semibold text-dark border shadow-xs">
+                📼 DDR5 RAM
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='Monitor') }}" class="btn btn-sm btn-white rounded-pill px-3 py-1.5 fw-semibold text-dark border shadow-xs">
+                🖥️ Gaming Monitors
+            </a>
+            <a href="{{ url_for('search', category='Laptops') }}" class="btn btn-sm btn-white rounded-pill px-3 py-1.5 fw-semibold text-dark border shadow-xs">
+                💻 Laptops
+            </a>
+            <a href="{{ url_for('search', category='Smartphones') }}" class="btn btn-sm btn-white rounded-pill px-3 py-1.5 fw-semibold text-dark border shadow-xs">
+                📱 Smartphones
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Trust & Feature Highlights Banner -->
+<section class="py-4 bg-white border-bottom shadow-xs">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-6 col-md-3">
+                <div class="p-2">
+                    <div class="fs-2 text-primary mb-1"><i class="bi bi-cpu-fill"></i></div>
+                    <h6 class="fw-bold mb-0">PC Builder Verified</h6>
+                    <small class="text-muted fs-xs">GPUs, CPUs, RAM & SSDs</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-2">
+                    <div class="fs-2 text-success mb-1"><i class="bi bi-shield-check"></i></div>
+                    <h6 class="fw-bold mb-0">100% Unbiased</h6>
+                    <small class="text-muted fs-xs">Top 5 Indian stores</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-2">
+                    <div class="fs-2 text-warning mb-1"><i class="bi bi-graph-up-arrow"></i></div>
+                    <h6 class="fw-bold mb-0">Chart.js Analytics</h6>
+                    <small class="text-muted fs-xs">Date-stamped price trends</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-2">
+                    <div class="fs-2 text-danger mb-1"><i class="bi bi-bell-fill"></i></div>
+                    <h6 class="fw-bold mb-0">Price Drop Alerts</h6>
+                    <small class="text-muted fs-xs">Instant target notifications</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Electronics Categories Section -->
+<section class="py-5 bg-light">
+    <div class="container py-lg-2">
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <div>
+                <h2 class="h3 fw-extrabold mb-1"><i class="bi bi-grid-fill me-2 text-primary"></i>Explore Categories</h2>
+                <p class="text-muted fs-sm mb-0">Compare live store prices across 9 specialized tech departments</p>
+            </div>
+            <a href="{{ url_for('search') }}" class="btn btn-outline-primary rounded-pill px-4 fw-bold">
+                View All Products <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <!-- 9 Electronics Category Cards with Color Spheres -->
+        <div class="row g-3">
+            {% for cat in categories %}
+            <div class="col-6 col-sm-4 col-md-3 col-xl-2.4">
+                <a href="{{ url_for('search', category=cat.name) }}" class="text-decoration-none">
+                    <div class="category-card h-100 {% if cat.name == 'PC Components' %}border-primary border-2 shadow-sm{% endif %}">
+                        <div class="category-icon-sphere mx-auto">
+                            <img src="{{ url_for('static', filename='images/categories/' ~ cat.slug ~ '.jpg') }}" alt="{{ cat.name }}" class="category-3d-img">
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1 fs-sm">
+                            {% if cat.name == 'PC Components' %}<i class="bi bi-star-fill text-warning me-1"></i>{% endif %}{{ cat.name }}
+                        </h6>
+                        <span class="badge bg-light text-primary fw-bold border rounded-pill fs-xs">
+                            {{ cat.products|length if cat.products is defined else (cat.count if cat.count is defined else 0) }} Products
+                        </span>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Shop By Popular Brands Showcase -->
+<section class="py-4 bg-white border-top border-bottom">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+            <h5 class="fw-extrabold mb-0 fs-6 text-dark"><i class="bi bi-award-fill text-warning me-2"></i>Shop by Top Tech & PC Brands</h5>
+            <span class="text-muted fs-xs">Instant brand price comparisons</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            {% for b in popular_brands %}
+            <a href="{{ url_for('search', brand=b) }}" class="btn btn-sm btn-light border rounded-pill px-3 py-2 fw-bold text-dark hover-primary shadow-xs">
+                {{ b }}
+            </a>
+            {% endfor %}
+            <a href="{{ url_for('search') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-2 fw-bold">
+                + All Brands
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- PC Hardware & Builder Spotlight Section -->
+{% if pc_spotlight_products %}
+<section class="py-5 bg-gradient-dark text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);">
+    <div class="container py-lg-3">
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <div>
+                <span class="badge bg-primary text-white fw-bold px-3 py-1.5 rounded-pill mb-2 fs-xs">
+                    <i class="bi bi-cpu-fill me-1"></i>PC BUILDER CENTER
+                </span>
+                <h2 class="h2 fw-extrabold mb-1 text-white">⚡ Top PC Component Deals</h2>
+                <p class="text-secondary fs-sm mb-0">Live prices on GPUs, CPUs, NVMe SSDs, and DDR5 RAM from Amazon, Flipkart & Croma</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url_for('search', category='PC Components') }}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                    Browse All PC Parts <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- PC Component Subcategory Pills -->
+        <div class="d-flex align-items-center gap-2 mb-4 flex-wrap">
+            <a href="{{ url_for('search', category='PC Components', subcat='GPU') }}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold">
+                🎮 GPUs / Graphics Cards
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='CPU') }}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold">
+                🧠 CPUs / Processors
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='SSD') }}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold">
+                ⚡ NVMe SSDs
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='RAM') }}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold">
+                📼 DDR5 RAM
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='Motherboard') }}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold">
+                🔌 Motherboards
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='Monitor') }}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1.5 fw-semibold">
+                🖥️ Gaming Monitors
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for p in pc_spotlight_products %}
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden product-card bg-dark text-white border-secondary border opacity-95">
+                    {% if p.discount_percentage and p.discount_percentage > 0 %}
+                        <span class="position-absolute top-0 start-0 m-3 badge bg-danger rounded-pill px-3 py-1 fs-xs z-1 shadow-xs">
+                            <i class="bi bi-fire me-1"></i>{{ p.discount_percentage }}% OFF
+                        </span>
+                    {% endif %}
+                    
+                    {% set sub_label = p.specs.get('Subcomponent') if p.specs is defined and p.specs.get('Subcomponent') else '' %}
+                    {% if sub_label %}
+                        <span class="position-absolute top-0 end-0 m-3 badge bg-primary text-white rounded-pill px-2.5 py-1 fs-xs z-1 shadow-xs">
+                            {{ sub_label }}
+                        </span>
+                    {% endif %}
+
+                    <!-- Image Container -->
+                    <div class="position-relative text-center p-4" style="background: rgba(255,255,255,0.05);">
+                        <img src="{{ p.image }}" class="card-img-top" alt="{{ p.name }}" style="height: 170px; object-fit: contain;" loading="lazy">
+                    </div>
+
+                    <!-- Card Details -->
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="text-info fs-xs fw-bold text-uppercase tracking-wider">{{ p.brand }}</span>
+                            <div class="fs-xs text-warning">
+                                <i class="bi bi-star-fill"></i> <span class="fw-bold text-white">{{ p.rating }}</span>
+                            </div>
+                        </div>
+
+                        <h6 class="card-title fw-bold text-truncate-2 mb-2 lh-base fs-sm">
+                            <a href="{{ url_for('product_details', product_id=p.id) }}" class="text-white text-decoration-none hover-primary">{{ p.name }}</a>
+                        </h6>
+
+                        <!-- Specs preview badges -->
+                        <div class="d-flex flex-wrap gap-1 mb-3">
+                            {% if p.specs is defined %}
+                                {% for key, val in p.specs.items() %}
+                                    {% if key != 'Subcomponent' and loop.index <= 2 %}
+                                        <span class="badge bg-secondary text-light fw-normal fs-xs border border-secondary" style="font-size: 0.7rem;">
+                                            {{ key }}: {{ val }}
+                                        </span>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="mt-auto pt-3 border-top border-secondary d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="fs-xs text-secondary d-block fw-semibold">Best Live Price</span>
+                                <div class="fs-5 fw-bold text-success">
+                                    ₹{{ "{:,.0f}".format(p.lowest_price) }}
+                                </div>
+                            </div>
+
+                            <a href="{{ url_for('product_details', product_id=p.id) }}" class="btn btn-primary btn-sm rounded-pill px-3 fw-bold">
+                                Compare Stores
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Lowest Price Products Section -->
+<section class="py-5 bg-white">
+    <div class="container py-lg-2">
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <div>
+                <h2 class="h3 fw-extrabold mb-1"><i class="bi bi-fire me-2 text-danger"></i>Featured Deals & Lowest Prices</h2>
+                <p class="text-muted fs-sm mb-0">Top-rated electronics with verified retailer price comparison</p>
+            </div>
+            <a href="{{ url_for('search', sort='discount') }}" class="btn btn-outline-primary rounded-pill px-4 fw-bold">
+                See All Deals <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for p in featured_products %}
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden product-card position-relative bg-white">
+                    {% if p.discount_percentage and p.discount_percentage > 0 %}
+                        <span class="position-absolute top-0 start-0 m-3 badge bg-danger rounded-pill px-3 py-1 fs-xs z-1 shadow-xs">
+                            <i class="bi bi-tag-fill me-1"></i>{{ p.discount_percentage }}% OFF
+                        </span>
+                    {% endif %}
+
+                    <!-- Image Container -->
+                    <div class="position-relative text-center p-4 bg-light">
+                        <img src="{{ p.image }}" class="card-img-top" alt="{{ p.name }}" style="height: 180px; object-fit: contain;" loading="lazy">
+                    </div>
+
+                    <!-- Card Details -->
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="text-muted fs-xs fw-bold text-uppercase tracking-wider">{{ p.brand }}</span>
+                            <div class="fs-xs text-warning">
+                                <i class="bi bi-star-fill"></i> <span class="fw-bold text-dark">{{ p.rating }}</span>
+                            </div>
+                        </div>
+
+                        <h6 class="card-title fw-bold text-truncate-2 mb-3 lh-base">
+                            <a href="{{ url_for('product_details', product_id=p.id) }}" class="text-dark text-decoration-none hover-primary">{{ p.name }}</a>
+                        </h6>
+
+                        <div class="mt-auto pt-3 border-top d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="fs-xs text-muted d-block fw-semibold">Lowest Price</span>
+                                <div class="fs-5 fw-bold text-success">
+                                    ₹{{ "{:,.0f}".format(p.lowest_price) }}
+                                </div>
+                            </div>
+
+                            <a href="{{ url_for('product_details', product_id=p.id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold">
+                                Compare Stores
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Retailer Logos & Customer Trust Section -->
+<section class="py-5 bg-dark text-white">
+    <div class="container text-center">
+        <span class="fs-xs fw-bold text-uppercase text-secondary tracking-wider d-block mb-3">Tracked Top E-Commerce Retailers</span>
+        <div class="d-flex align-items-center justify-content-center gap-3 flex-wrap mb-4">
+            <span class="badge badge-retailer-amazon px-4 py-2 fs-6 rounded-pill"><i class="bi bi-bag-check-fill me-1"></i>Amazon</span>
+            <span class="badge badge-retailer-flipkart px-4 py-2 fs-6 rounded-pill"><i class="bi bi-cart-fill me-1"></i>Flipkart</span>
+            <span class="badge badge-retailer-croma px-4 py-2 fs-6 rounded-pill"><i class="bi bi-laptop me-1"></i>Croma</span>
+            <span class="badge badge-retailer-reliance px-4 py-2 fs-6 rounded-pill"><i class="bi bi-plug-fill me-1"></i>Reliance Digital</span>
+            <span class="badge badge-retailer-vijaysales px-4 py-2 fs-6 rounded-pill"><i class="bi bi-tag-fill me-1"></i>Vijay Sales</span>
+        </div>
+        <p class="text-secondary fs-sm max-w-lg mx-auto mb-0">
+            RigRate automatically scrapes, tracks, and matches verified live pricing across India's top 5 authorized electronics retailers.
+        </p>
+    </div>
+</section>
+{% endblock %}

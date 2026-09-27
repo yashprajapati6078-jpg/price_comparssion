@@ -1,0 +1,525 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - RigRate | Real-Time Electronics Price Intelligence{% endblock %}
+
+{% block content %}
+<!-- Ambient Hero Header Section with Glassmorphic Elements -->
+<section class="py-5 position-relative border-bottom overflow-hidden" style="background: linear-gradient(135deg, rgba(37,99,235,0.04) 0%, rgba(147,51,234,0.05) 50%, rgba(16,185,129,0.03) 100%);">
+    <div class="container py-lg-4 text-center position-relative z-1">
+        
+        <!-- Live System Pulse Badge -->
+        <div class="d-inline-flex align-items-center gap-2 bg-white border border-slate-200 shadow-xs rounded-pill px-3.5 py-1.5 mb-3">
+            <span class="d-inline-block rounded-circle bg-success" style="width: 8px; height: 8px; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25); animation: pulse 2s infinite;"></span>
+            <span class="fs-xs fw-bold text-uppercase tracking-wider text-secondary">Automated Price Intelligence Engine Active</span>
+        </div>
+
+        <h1 class="display-4 fw-extrabold text-dark mb-3 mx-auto" style="max-width: 960px; letter-spacing: -1.2px; line-height: 1.15;">
+            The Transparent Truth Machine for <span class="text-gradient-primary">Electronics Shopping in India</span>
+        </h1>
+        <p class="lead text-secondary mx-auto fs-5 mb-4" style="max-width: 800px; line-height: 1.65;">
+            Electronics shopping shouldn't require five open tabs, fake festival countdown timers, or guessing whether a “50% OFF” banner is authentic. 
+            <strong>RigRate</strong> continuously indexes, verifies, and charts live tech prices across India’s premier retail giants with zero retailer bias.
+        </p>
+
+        <div class="d-flex align-items-center justify-content-center gap-3 flex-wrap">
+            <a href="{{ url_for('search') }}" class="btn btn-primary rounded-pill px-4 py-2.5 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                <i class="bi bi-search"></i>Explore Verified Deals
+            </a>
+            <a href="#the-problem" class="btn btn-outline-secondary rounded-pill px-4 py-2.5 fw-bold d-inline-flex align-items-center gap-2">
+                <i class="bi bi-shield-check"></i>Why We Built RigRate
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Live Impact Metrics Row -->
+<div class="container my-5">
+    <div class="row g-4">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white product-card h-100">
+                <div class="fs-1 fw-extrabold text-primary mb-1" style="letter-spacing: -1px;">5</div>
+                <div class="fs-xs fw-bold text-uppercase text-muted tracking-wider">Authorized Retail Giants</div>
+                <small class="text-secondary fs-xs mt-1 d-block">Amazon, Flipkart, Croma, Reliance Digital & Vijay Sales</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white product-card h-100">
+                <div class="fs-1 fw-extrabold text-success mb-1" style="letter-spacing: -1px;">200+</div>
+                <div class="fs-xs fw-bold text-uppercase text-muted tracking-wider">Live Tracked Gadgets</div>
+                <small class="text-secondary fs-xs mt-1 d-block">GPUs, CPUs, 5G Phones, Laptops & Audio</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white product-card h-100">
+                <div class="fs-1 fw-extrabold text-warning mb-1" style="letter-spacing: -1px;">3 Hours</div>
+                <div class="fs-xs fw-bold text-uppercase text-muted tracking-wider">Background Sync Cycle</div>
+                <small class="text-secondary fs-xs mt-1 d-block">Continuous APScheduler scraping + on-demand sync</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white product-card h-100">
+                <div class="fs-1 fw-extrabold text-indigo mb-1" style="color: #6366f1; letter-spacing: -1px;">100%</div>
+                <div class="fs-xs fw-bold text-uppercase text-muted tracking-wider">Unbiased Independence</div>
+                <small class="text-secondary fs-xs mt-1 d-block">Zero paid sponsorships or hidden placement fees</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- The Problem & Solution: Interactive Comparison Showcase -->
+<div class="container mb-5 pt-3" id="the-problem">
+    <div class="text-center mb-5 max-w-xl mx-auto">
+        <span class="badge bg-danger-subtle text-danger fw-bold rounded-pill px-3 py-1.5 text-uppercase fs-xs mb-2 tracking-wider">
+            <i class="bi bi-lightning-charge-fill me-1"></i>REALITY CHECK
+        </span>
+        <h2 class="fw-extrabold display-6 text-dark" style="letter-spacing: -0.5px;">Why Electronics Shopping in India is Broken</h2>
+        <p class="text-muted fs-sm">The contrast between how people shop today vs. the clarity RigRate provides.</p>
+    </div>
+
+    <div class="row g-4 align-items-stretch">
+        <!-- The Old Way (Broken) -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 h-100 bg-white border-top border-4 border-danger product-card">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="p-3 bg-danger-subtle text-danger rounded-3">
+                        <i class="bi bi-x-octagon-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <span class="badge bg-danger-subtle text-danger fs-xs fw-bold text-uppercase">The Exhausting Way</span>
+                        <h4 class="fw-bold mb-0 text-dark">Shopping Without Price History</h4>
+                    </div>
+                </div>
+
+                <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                    <li class="d-flex align-items-start gap-2.5">
+                        <i class="bi bi-x-circle-fill text-danger fs-5 mt-0.5 flex-shrink-0"></i>
+                        <div>
+                            <strong class="text-dark fs-sm d-block">Tab Fatigue</strong>
+                            <small class="text-muted">Opening 5+ separate retailer tabs and manually checking delivery dates and bank offers over and over.</small>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2.5">
+                        <i class="bi bi-x-circle-fill text-danger fs-5 mt-0.5 flex-shrink-0"></i>
+                        <div>
+                            <strong class="text-dark fs-sm d-block">Pre-Sale MRP Inflation</strong>
+                            <small class="text-muted">Retailers often hike the baseline price right before festive sales, creating fake "40% OFF" optical illusions.</small>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2.5">
+                        <i class="bi bi-x-circle-fill text-danger fs-5 mt-0.5 flex-shrink-0"></i>
+                        <div>
+                            <strong class="text-dark fs-sm d-block">Accessory & Refurbished Traps</strong>
+                            <small class="text-muted">Searching for a ₹70,000 phone returns ₹299 back covers or unverified refurbished units mixed together.</small>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2.5">
+                        <i class="bi bi-x-circle-fill text-danger fs-5 mt-0.5 flex-shrink-0"></i>
+                        <div>
+                            <strong class="text-dark fs-sm d-block">Zero Price Memory</strong>
+                            <small class="text-muted">No way to know if today’s ₹45,000 laptop price was ₹41,000 two weeks ago without tracking spreadsheets manually.</small>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- The RigRate Way (Engineered) -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 h-100 bg-white border-top border-4 border-success product-card">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="p-3 bg-success-subtle text-success rounded-3">
+                        <i class="bi bi-check-circle-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <span class="badge bg-success-subtle text-success fs-xs fw-bold text-uppercase">The RigRate Way</span>
+                        <h4 class="fw-bold mb-0 text-dark">Data-Driven Buying Clarity</h4>
+                    </div>
+                </div>
+
+                <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                    <li class="d-flex align-items-start gap-2.5">
+                        <i class="bi bi-check-circle-fill text-success fs-5 mt-0.5 flex-shrink-0"></i>
+                        <div>
+                            <strong class="text-dark fs-sm d-block">One Clean Comparison Table</strong>
+                            <small class="text-muted">Direct side-by-side pricing from Amazon, Flipkart, Croma, Reliance Digital, and Vijay Sales in a single view.</small>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2.5">
+                        <i class="bi bi-check-circle-fill text-success fs-5 mt-0.5 flex-shrink-0"></i>
+                        <div>
+                            <strong class="text-dark fs-sm d-block">30-Day Historical Trend Charts</strong>
+                            <small class="text-muted">Interactive Chart.js graphs expose the all-time low price, letting you buy when the deal is genuinely real.</small>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2.5">
+                        <i class="bi bi-check-circle-fill text-success fs-5 mt-0.5 flex-shrink-0"></i>
+                        <div>
+                            <strong class="text-dark fs-sm d-block">Accessory & Model Armor</strong>
+                            <small class="text-muted">Intelligent token heuristics strip out cases, covers, and model mismatches (like standard iPhone vs. Pro Max).</small>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start gap-2.5">
+                        <i class="bi bi-check-circle-fill text-success fs-5 mt-0.5 flex-shrink-0"></i>
+                        <div>
+                            <strong class="text-dark fs-sm d-block">Instant Price Drop Alerts</strong>
+                            <small class="text-muted">Set your target price and let our background scheduler monitor the stores 24/7, notifying you the instant it hits.</small>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Verified Retailers Showcase -->
+<div class="container mb-5 pt-3">
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+        <div class="text-center mb-4 max-w-xl mx-auto">
+            <span class="badge bg-primary-subtle text-primary fw-bold rounded-pill px-3 py-1.5 text-uppercase fs-xs mb-2 tracking-wider">OFFICIAL STORE COVERAGE</span>
+            <h3 class="fw-extrabold text-dark">Why We Track Only India's 5 Retail Giants</h3>
+            <p class="text-muted fs-sm">Unverified websites often sell imported units without India warranty. We index the stores that guarantee genuine products.</p>
+        </div>
+
+        <div class="row g-3 justify-content-center">
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="p-3.5 rounded-4 border text-center h-100 bg-light d-flex flex-column align-items-center justify-content-center">
+                    <span class="badge badge-retailer-amazon px-3 py-2 fs-6 rounded-3 mb-2 shadow-xs">Amazon</span>
+                    <small class="text-muted fs-xs fw-semibold">Fast Prime Delivery</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="p-3.5 rounded-4 border text-center h-100 bg-light d-flex flex-column align-items-center justify-content-center">
+                    <span class="badge badge-retailer-flipkart px-3 py-2 fs-6 rounded-3 mb-2 shadow-xs">Flipkart</span>
+                    <small class="text-muted fs-xs fw-semibold">Plus & VIP Deals</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="p-3.5 rounded-4 border text-center h-100 bg-light d-flex flex-column align-items-center justify-content-center">
+                    <span class="badge badge-retailer-croma px-3 py-2 fs-6 rounded-3 mb-2 shadow-xs">Croma</span>
+                    <small class="text-muted fs-xs fw-semibold">Tata Official Retail</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="p-3.5 rounded-4 border text-center h-100 bg-light d-flex flex-column align-items-center justify-content-center">
+                    <span class="badge badge-retailer-reliance px-3 py-2 fs-6 rounded-3 mb-2 shadow-xs">Reliance Digital</span>
+                    <small class="text-muted fs-xs fw-semibold">Express Store Pickup</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="p-3.5 rounded-4 border text-center h-100 bg-light d-flex flex-column align-items-center justify-content-center">
+                    <span class="badge badge-retailer-vijaysales px-3 py-2 fs-6 rounded-3 mb-2 shadow-xs">Vijay Sales</span>
+                    <small class="text-muted fs-xs fw-semibold">Verified Tech Partner</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Architecture Pipeline: How We Verify Prices -->
+<div class="container mb-5 pt-3" id="how-it-works">
+    <div class="text-center mb-5 max-w-xl mx-auto">
+        <span class="badge bg-primary-subtle text-primary fw-bold rounded-pill px-3 py-1.5 text-uppercase fs-xs mb-2 tracking-wider">ENGINEERING EXCELLENCE</span>
+        <h2 class="fw-extrabold display-6 text-dark" style="letter-spacing: -0.5px;">How RigRate Verifies Every Price</h2>
+        <p class="text-muted fs-sm">A multi-stage ingestion and cleansing pipeline built for speed, safety, and accuracy.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Stage 1 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white product-card">
+                <div class="badge bg-primary text-white rounded-pill px-3 py-1 fs-xs fw-bold mb-3 d-inline-block">STAGE 01</div>
+                <div class="p-3 bg-primary-subtle text-primary rounded-circle mb-3 d-inline-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                    <i class="bi bi-cloud-arrow-down-fill fs-3"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Live API Ingestion</h5>
+                <p class="text-secondary fs-sm mb-0">
+                    Queries SerpApi Google Shopping & RapidAPI in real-time, retrieving structured multi-store listings without fragile, blocked web scraping.
+                </p>
+            </div>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white product-card">
+                <div class="badge bg-success text-white rounded-pill px-3 py-1 fs-xs fw-bold mb-3 d-inline-block">STAGE 02</div>
+                <div class="p-3 bg-success-subtle text-success rounded-circle mb-3 d-inline-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                    <i class="bi bi-funnel-fill fs-3"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Accessory & Model Filter</h5>
+                <p class="text-secondary fs-sm mb-0">
+                    Our safety heuristic discards back covers, chargers, refurbished units, and model confusion (e.g. base model vs. Pro Max).
+                </p>
+            </div>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white product-card">
+                <div class="badge bg-warning text-dark rounded-pill px-3 py-1 fs-xs fw-bold mb-3 d-inline-block">STAGE 03</div>
+                <div class="p-3 bg-warning-subtle text-warning rounded-circle mb-3 d-inline-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                    <i class="bi bi-graph-up-arrow fs-3"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">30-Day Indexing</h5>
+                <p class="text-secondary fs-sm mb-0">
+                    Every price point is date-stamped into SQLite. Chart.js visualizes price stability, deals radar, and historical all-time lows.
+                </p>
+            </div>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white product-card">
+                <div class="badge bg-info text-dark rounded-pill px-3 py-1 fs-xs fw-bold mb-3 d-inline-block">STAGE 04</div>
+                <div class="p-3 bg-info-subtle text-info rounded-circle mb-3 d-inline-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                    <i class="bi bi-bell-fill fs-3"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Direct Link & Alerts</h5>
+                <p class="text-secondary fs-sm mb-0">
+                    Generates clean, direct-to-retailer checkout links and instantly evaluates price drop alerts saved by registered users.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Community Voices / Real Shopper Experiences -->
+<div class="container mb-5 pt-3">
+    <div class="text-center mb-5 max-w-xl mx-auto">
+        <span class="badge bg-success-subtle text-success fw-bold rounded-pill px-3 py-1.5 text-uppercase fs-xs mb-2 tracking-wider">
+            <i class="bi bi-chat-quote-fill me-1"></i>COMMUNITY VOICES
+        </span>
+        <h2 class="fw-extrabold display-6 text-dark" style="letter-spacing: -0.5px;">Trusted by Tech Enthusiasts in India</h2>
+        <p class="text-muted fs-sm">Stories from real buyers who saved money and avoided fake deals using RigRate.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Review 1 -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white product-card d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex text-warning mb-3">
+                        <i class="bi bi-star-fill me-1"></i><i class="bi bi-star-fill me-1"></i><i class="bi bi-star-fill me-1"></i><i class="bi bi-star-fill me-1"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="text-secondary fs-sm leading-relaxed mb-4">
+                        "Saved ₹7,400 on my RTX 4070 PC build. Everyone assumes Amazon or Flipkart is always cheapest, but RigRate showed Croma had an unadvertised instant card discount that beat them all."
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-3 pt-3 border-top">
+                    <div class="rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                        RI
+                    </div>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-0 fs-sm">Rohan Iyer</h6>
+                        <small class="text-muted fs-xs">PC Builder & Gamer • Bengaluru</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review 2 -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white product-card d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex text-warning mb-3">
+                        <i class="bi bi-star-fill me-1"></i><i class="bi bi-star-fill me-1"></i><i class="bi bi-star-fill me-1"></i><i class="bi bi-star-fill me-1"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="text-secondary fs-sm leading-relaxed mb-4">
+                        "The 30-day price trend chart is the ultimate lie detector. During the Big Billion Days, a phone was advertised as a massive festival drop, but RigRate showed it was actually ₹1,500 cheaper 3 weeks before!"
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-3 pt-3 border-top">
+                    <div class="rounded-circle bg-success-subtle text-success fw-bold d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                        PS
+                    </div>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-0 fs-sm">Priya Sharma</h6>
+                        <small class="text-muted fs-xs">Tech Content Creator • Delhi NCR</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review 3 -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white product-card d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex text-warning mb-3">
+                        <i class="bi bi-star-fill me-1"></i><i class="bi bi-star-fill me-1"></i><i class="bi bi-star-fill me-1"></i><i class="bi bi-star-fill me-1"></i><i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="text-secondary fs-sm leading-relaxed mb-4">
+                        "The 'Live Price Sync' button gave me the confidence that I was checking the real-time stock and price before clicking Buy. No spam, no random unverified sellers — just straight facts."
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-3 pt-3 border-top">
+                    <div class="rounded-circle bg-warning-subtle text-warning fw-bold d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                        VP
+                    </div>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-0 fs-sm">Vikram Patel</h6>
+                        <small class="text-muted fs-xs">Computer Science Student • Pune</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Team & Leadership Spotlight Section -->
+<div class="container mb-5 pt-3">
+    <div class="text-center mb-5 max-w-xl mx-auto">
+        <span class="badge bg-secondary-subtle text-secondary fw-bold rounded-pill px-3 py-1.5 text-uppercase fs-xs mb-2 tracking-wider">FOUNDER & ARCHITECT</span>
+        <h2 class="fw-extrabold display-6 text-dark" style="letter-spacing: -0.5px;">Built with Independent Engineering</h2>
+        <p class="text-muted fs-sm">Designed, architected, and continuously maintained with high standards of data integrity.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <!-- Founder Card -->
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 shadow-md rounded-4 p-4 p-md-5 bg-white product-card position-relative overflow-hidden">
+                <div class="position-absolute top-0 start-0 w-100 bg-primary" style="height: 6px;"></div>
+                
+                <div class="row align-items-center g-4">
+                    <div class="col-md-4 text-center">
+                        <div class="position-relative d-inline-block mx-auto mb-3">
+                            <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center mx-auto shadow-sm" style="width: 110px; height: 110px;">
+                                <i class="bi bi-person-workspace display-3"></i>
+                            </div>
+                            <span class="position-absolute bottom-0 end-0 badge bg-success rounded-circle p-2 border border-2 border-white" title="Active Core Maintainer">
+                                <span class="visually-hidden">Active</span>
+                            </span>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-1">Yash Prajapati</h4>
+                        <div class="text-primary fw-semibold fs-sm mb-2">Founder & Lead Architect</div>
+                        <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1 fs-xs">RigRate Creator</span>
+                    </div>
+
+                    <div class="col-md-8">
+                        <h5 class="fw-bold text-dark mb-2">"Technology is expensive. Finding its true price shouldn't be."</h5>
+                        <p class="text-secondary fs-sm leading-relaxed mb-3">
+                            I built RigRate after experiencing how difficult it was to build a gaming PC in India without getting ripped off by artificially inflated prices and confusing flash sales. 
+                            Our mission is simple: provide an uncompromising, ad-free, 100% transparent comparison tool so tech builders always get the best verified deal.
+                        </p>
+
+                        <div class="d-flex align-items-center gap-2 flex-wrap mb-4">
+                            <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5 fs-xs fw-medium"><i class="bi bi-filetype-py me-1 text-primary"></i>Python / Flask</span>
+                            <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5 fs-xs fw-medium"><i class="bi bi-database me-1 text-success"></i>SQLAlchemy ORM</span>
+                            <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5 fs-xs fw-medium"><i class="bi bi-cpu me-1 text-warning"></i>Hardware APIs</span>
+                            <span class="badge bg-light text-dark border rounded-pill px-3 py-1.5 fs-xs fw-medium"><i class="bi bi-magic me-1 text-info"></i>Gemini AI</span>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <a href="{{ url_for('contact') }}" class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold">
+                                <i class="bi bi-envelope-fill me-1"></i>Get in Touch
+                            </a>
+                            <a href="{{ url_for('search') }}" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold">
+                                <i class="bi bi-grid-fill me-1"></i>Explore Catalog
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Transparency FAQ Accordion -->
+<div class="container mb-5 pt-3">
+    <div class="text-center mb-5 max-w-xl mx-auto">
+        <span class="badge bg-primary-subtle text-primary fw-bold rounded-pill px-3 py-1.5 text-uppercase fs-xs mb-2 tracking-wider">TRANSPARENCY & INTEGRITY</span>
+        <h2 class="fw-extrabold display-6 text-dark" style="letter-spacing: -0.5px;">Frequently Asked Questions</h2>
+        <p class="text-muted fs-sm">Everything you need to know about our data, ethics, and accuracy.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="accordion accordion-flush rounded-4 overflow-hidden shadow-sm border bg-white" id="transparencyFaqAccordion">
+                
+                <!-- FAQ 1 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqHeading1">
+                        <button class="accordion-button fw-bold text-dark fs-6 py-3 px-4" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse1" aria-expanded="true" aria-controls="faqCollapse1">
+                            <i class="bi bi-question-circle-fill text-primary me-2.5"></i> How often are prices updated across stores?
+                        </button>
+                    </h2>
+                    <div id="faqCollapse1" class="accordion-collapse collapse show" aria-labelledby="faqHeading1" data-bs-parent="#transparencyFaqAccordion">
+                        <div class="accordion-body px-4 pb-4 pt-1 text-secondary fs-sm leading-relaxed">
+                            Our automated background engine runs every <strong>3 hours</strong> around the clock via APScheduler. In addition, users can click the <strong>"Live Price Sync"</strong> button directly on any product page to ping live store APIs and fetch fresh prices in seconds before purchasing.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqHeading2">
+                        <button class="accordion-button collapsed fw-bold text-dark fs-6 py-3 px-4" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse2" aria-expanded="false" aria-controls="faqCollapse2">
+                            <i class="bi bi-shop text-primary me-2.5"></i> Why do you only track Amazon, Flipkart, Croma, Reliance Digital, and Vijay Sales?
+                        </button>
+                    </h2>
+                    <div id="faqCollapse2" class="accordion-collapse collapse" aria-labelledby="faqHeading2" data-bs-parent="#transparencyFaqAccordion">
+                        <div class="accordion-body px-4 pb-4 pt-1 text-secondary fs-sm leading-relaxed">
+                            Consumer safety is our #1 priority. Unverified third-party websites often display unrealistically low prices for imported or refurbished stock without genuine manufacturer warranties in India. By focusing on the 5 authorized retail giants, we ensure every deal you find includes genuine warranty and return policies.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqHeading3">
+                        <button class="accordion-button collapsed fw-bold text-dark fs-6 py-3 px-4" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse3" aria-expanded="false" aria-controls="faqCollapse3">
+                            <i class="bi bi-funnel-fill text-primary me-2.5"></i> How do you prevent ₹299 phone cases from skewing phone prices?
+                        </button>
+                    </h2>
+                    <div id="faqCollapse3" class="accordion-collapse collapse" aria-labelledby="faqHeading3" data-bs-parent="#transparencyFaqAccordion">
+                        <div class="accordion-body px-4 pb-4 pt-1 text-secondary fs-sm leading-relaxed">
+                            We have engineered a dual-layer filtering system:
+                            <ul class="mb-0 mt-2 ps-3">
+                                <li><strong>Accessory Keyword Stripper:</strong> Automatically detects and discards cases, covers, screen protectors, cables, and chargers.</li>
+                                <li><strong>Price Anomaly Guardian:</strong> Rejects any price point that falls suspiciously below normal hardware threshold ratios (e.g. an iPhone listed for ₹1,500 is flagged as an anomaly and rejected).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqHeading4">
+                        <button class="accordion-button collapsed fw-bold text-dark fs-6 py-3 px-4" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse4" aria-expanded="false" aria-controls="faqCollapse4">
+                            <i class="bi bi-cash-stack text-primary me-2.5"></i> Can retailers pay RigRate to rank higher or hide competitor prices?
+                        </button>
+                    </h2>
+                    <div id="faqCollapse4" class="accordion-collapse collapse" aria-labelledby="faqHeading4" data-bs-parent="#transparencyFaqAccordion">
+                        <div class="accordion-body px-4 pb-4 pt-1 text-secondary fs-sm leading-relaxed">
+                            <strong>Absolutely not.</strong> Our sorting and "Best Price" trophy badges are purely mathematical. The store with the lowest verified in-stock price is automatically awarded the top spot. We maintain complete independence and zero retailer bias.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Call to Action Banner -->
+<section class="py-5 bg-dark text-white rounded-4 container mb-5 shadow-lg position-relative overflow-hidden">
+    <div class="position-absolute top-0 end-0 p-5 opacity-10">
+        <i class="bi bi-cpu display-1"></i>
+    </div>
+    <div class="text-center max-w-xl mx-auto position-relative z-1">
+        <span class="badge bg-warning text-dark fw-bold rounded-pill px-3.5 py-1.5 text-uppercase fs-xs mb-3 shadow-xs">
+            <i class="bi bi-lightning-fill me-1"></i>START SAVING TODAY
+        </span>
+        <h3 class="display-6 fw-extrabold text-white mb-3" style="letter-spacing: -0.5px;">Ready to Find the Best Tech Deal?</h3>
+        <p class="text-white-50 fs-sm leading-relaxed mb-4 mx-auto" style="max-width: 620px;">
+            Join thousands of smart electronics shoppers in India who compare prices, monitor 30-day graphs, and set automated price alerts on RigRate.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{{ url_for('search') }}" class="btn btn-primary rounded-pill px-4 py-2.5 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+                <i class="bi bi-search"></i>Compare Prices Now
+            </a>
+            <a href="{{ url_for('contact') }}" class="btn btn-outline-light rounded-pill px-4 py-2.5 fw-bold d-inline-flex align-items-center gap-2">
+                <i class="bi bi-chat-dots-fill"></i>Contact Our Team
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
