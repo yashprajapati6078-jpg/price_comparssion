@@ -101,13 +101,23 @@ class PriceScraperEngine:
                     availability=item.get("availability", "In Stock"),
                     rating=item.get("rating") or 4.5,
                     buy_url=item.get("product_url") or "#",
+                    direct_url=item.get("product_url"),
+                    product_url=item.get("product_url"),
+                    url_type=item.get("url_type", "SEARCH_FALLBACK"),
+                    retailer_product_id=item.get("retailer_product_id") or item.get("product_id"),
                     last_updated=now
                 )
                 db_session.add(price_obj)
             else:
                 price_obj.price = float(new_price)
                 if item.get("product_url"):
+                    price_obj.product_url = item.get("product_url")
+                    price_obj.direct_url = item.get("product_url")
                     price_obj.buy_url = item.get("product_url")
+                if item.get("url_type"):
+                    price_obj.url_type = item.get("url_type")
+                if item.get("retailer_product_id"):
+                    price_obj.retailer_product_id = item.get("retailer_product_id")
                 if item.get("delivery"):
                     price_obj.delivery = item.get("delivery")
                 if item.get("availability"):

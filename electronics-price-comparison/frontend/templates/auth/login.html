@@ -1,51 +1,182 @@
 {% extends 'base.html' %}
 
-{% block title %}User Login | ElectroCompare{% endblock %}
+{% block title %}Login | RigRate Price Comparison{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="col-md-7 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden position-relative">
                 <div class="card-body p-4 p-md-5">
                     <div class="text-center mb-4">
-                        <div class="bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 60px; height: 60px;">
+                        <div class="bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center rounded-circle mb-3 shadow-xs" style="width: 64px; height: 64px;">
                             <i class="bi bi-box-arrow-in-right fs-2"></i>
                         </div>
-                        <h3 class="fw-bold">Welcome Back</h3>
-                        <p class="text-muted fs-sm">Login to manage your Wishlist and Price Alerts</p>
+                        <h3 class="fw-bold tracking-tight mb-1">Welcome Back</h3>
+                        <p class="text-muted fs-sm">Sign in to manage your Wishlist, Custom Builds, and Price Alerts</p>
                     </div>
 
-                    <form action="{{ url_for('login') }}" method="POST">
+                    <form action="{{ url_for('login', next=request.args.get('next', '')) }}" method="POST" class="needs-validation" id="loginForm" novalidate>
+                        <!-- Username / Email Field -->
                         <div class="mb-3">
-                            <label for="usernameInput" class="form-label fw-semibold">Username or Email</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
-                                <input type="text" name="username" id="usernameInput" class="form-control bg-light border-start-0" placeholder="Enter username or email" required>
+                            <label for="usernameInput" class="form-label fw-semibold fs-sm text-dark d-flex justify-content-between">
+                                <span>Username or Email</span>
+                                <span class="text-muted fs-xs fw-normal">Required</span>
+                            </label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-person"></i></span>
+                                <input type="text" 
+                                       name="username" 
+                                       id="usernameInput" 
+                                       class="form-control bg-light border-start-0" 
+                                       placeholder="Enter your username or email" 
+                                       value="{{ username or request.form.get('username', '') }}"
+                                       required
+                                       autocomplete="username">
+                                <div class="invalid-feedback">
+                                    Please enter your username or registered email address.
+                                </div>
                             </div>
                         </div>
 
-                        <div class="mb-4">
-                            <label for="passwordInput" class="form-label fw-semibold">Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
-                                <input type="password" name="password" id="passwordInput" class="form-control bg-light border-start-0" placeholder="Enter password" required>
+                        <!-- Password Field -->
+                        <div class="mb-3">
+                            <label for="passwordInput" class="form-label fw-semibold fs-sm text-dark d-flex justify-content-between">
+                                <span>Password</span>
+                                <span class="text-muted fs-xs fw-normal">Required</span>
+                            </label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-lock"></i></span>
+                                <input type="password" 
+                                       name="password" 
+                                       id="passwordInput" 
+                                       class="form-control bg-light border-start-0 border-end-0" 
+                                       placeholder="Enter your password" 
+                                       required
+                                       autocomplete="current-password">
+                                <button class="btn btn-light border border-start-0 text-muted px-3" 
+                                        type="button" 
+                                        id="togglePasswordBtn" 
+                                        aria-label="Toggle password visibility"
+                                        tabindex="-1">
+                                    <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                                </button>
+                                <div class="invalid-feedback">
+                                    Please enter your password.
+                                </div>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill fw-bold mb-3">
-                            Login <i class="bi bi-arrow-right ms-1"></i>
+                        <!-- Quick Credentials Helper Pills for Easy Testing -->
+                        <div class="p-2 mb-4 bg-light rounded-3 border border-dashed text-center">
+                            <span class="fs-xs text-muted d-block mb-1"><i class="bi bi-key-fill text-warning me-1"></i>Quick fill test credentials:</span>
+                            <div class="d-flex justify-content-center gap-2">
+                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill py-0 px-2.5 fs-xs quick-fill-btn" data-user="demo" data-pass="demo123">
+                                    demo / demo123
+                                </button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill py-0 px-2.5 fs-xs quick-fill-btn" data-user="admin" data-pass="admin123">
+                                    admin / admin123
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2.5 rounded-pill fw-bold mb-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                            <span>Sign In</span>
+                            <i class="bi bi-arrow-right"></i>
                         </button>
                     </form>
 
                     <div class="text-center pt-3 border-top">
                         <p class="text-muted fs-sm mb-0">
-                            Don't have an account? <a href="{{ url_for('register') }}" class="fw-bold text-primary text-decoration-none">Register now</a>
+                            Don't have an account? 
+                            <a href="{{ url_for('register') }}" class="fw-bold text-primary text-decoration-none">
+                                Register now <i class="bi bi-chevron-right fs-xs"></i>
+                            </a>
                         </p>
                     </div>
                 </div>
             </div>
+
+            <!-- Trust Badge -->
+            <div class="text-center mt-3 text-muted fs-xs">
+                <i class="bi bi-shield-check text-success me-1"></i> End-to-end encrypted session & secure hash protection
+            </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('loginForm');
+    const usernameInput = document.getElementById('usernameInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+    const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+
+    // Toggle Password Visibility
+    if (togglePasswordBtn && passwordInput && togglePasswordIcon) {
+        togglePasswordBtn.addEventListener('click', function () {
+            const isPassword = passwordInput.getAttribute('type') === 'password';
+            passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+            togglePasswordIcon.classList.toggle('bi-eye', !isPassword);
+            togglePasswordIcon.classList.toggle('bi-eye-slash', isPassword);
+        });
+    }
+
+    // Quick Credential Fill Helpers
+    document.querySelectorAll('.quick-fill-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            if (usernameInput) usernameInput.value = this.dataset.user;
+            if (passwordInput) passwordInput.value = this.dataset.pass;
+            if (form) form.classList.remove('was-validated');
+        });
+    });
+
+    // Form validation on submit
+    if (form) {
+        form.addEventListener('submit', function (event) {
+            let isValid = true;
+
+            // Trim and validate username/email
+            const usernameVal = usernameInput ? usernameInput.value.trim() : '';
+            if (!usernameVal) {
+                usernameInput.setCustomValidity('Please enter username or email.');
+                isValid = false;
+            } else {
+                usernameInput.setCustomValidity('');
+            }
+
+            // Validate password
+            const passwordVal = passwordInput ? passwordInput.value : '';
+            if (!passwordVal) {
+                passwordInput.setCustomValidity('Please enter password.');
+                isValid = false;
+            } else {
+                passwordInput.setCustomValidity('');
+            }
+
+            if (!isValid || !form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            form.classList.add('was-validated');
+        });
+
+        // Clear custom validity on input
+        if (usernameInput) {
+            usernameInput.addEventListener('input', () => {
+                if (usernameInput.value.trim()) usernameInput.setCustomValidity('');
+            });
+        }
+        if (passwordInput) {
+            passwordInput.addEventListener('input', () => {
+                if (passwordInput.value) passwordInput.setCustomValidity('');
+            });
+        }
+    }
+});
+</script>
 {% endblock %}

@@ -1,8 +1,11 @@
 import json
 import os
+import re
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from sqlalchemy import func, or_
+
 
 # Ensure environment variables are loaded
 try:
@@ -24,12 +27,36 @@ app.secret_key = 'smart-electronics-compare-secret-key-2026'
 # SQLite database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'electronics.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'connect_args': {'timeout': 30}}
+
+
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 
 from models import db, User, Category, Retailer, Product, Price, PriceHistory, Wishlist, PriceAlert
 from scraper import PriceScraperEngine
 from scheduler import init_scheduler
 
 db.init_app(app)
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    try:
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA busy_timeout=30000")
+        cursor.close()
+    except Exception:
+        pass
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    if exception is not None:
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+    db.session.remove()
 
 # Flask-Login configuration
 login_manager = LoginManager()
@@ -43,14 +70,26 @@ def load_user(user_id):
 @app.context_processor
 def inject_globals():
     try:
+        from sqlalchemy import func
         cats = Category.query.all()
         cats.sort(key=lambda c: 0 if c.name == 'PC Components' else 1)
+        # Fast single query for category counts to eliminate N+1 lazy queries in base.html
+        counts = dict(db.session.query(Product.category_id, func.count(Product.id)).group_by(Product.category_id).all())
+        for c in cats:
+            c.product_count = counts.get(c.id, 0)
     except Exception:
         cats = []
     return dict(categories=cats)
 
 def seed_database():
     with app.app_context():
+        try:
+            # If database is already seeded, skip all initialization queries
+            if Product.query.first() is not None and Retailer.query.first() is not None:
+                return
+        except Exception:
+            pass
+
         db.create_all()
 
         # 1. Categories
@@ -113,21 +152,22 @@ def seed_database():
             db.session.add(demo_user)
             db.session.commit()
 
-        # 4. Insert Curated Products
-        from catalog_data import CURATED_PRODUCTS
-        inserted = PriceScraperEngine.insert_products_batch(CURATED_PRODUCTS, db.session)
-        if inserted > 0:
-            print(f"Inserted {inserted} new curated products.")
-
+        # 4. Insert Curated Products if catalog is empty
         current_count = Product.query.count()
         if current_count < 120:
-            extra_needed = 120 - current_count
-            print(f"Expanding catalog with {extra_needed} products...")
-            PriceScraperEngine.generate_and_insert_infinite_products(count=extra_needed, db_session=db.session)
+            from catalog_data import CURATED_PRODUCTS
+            inserted = PriceScraperEngine.insert_products_batch(CURATED_PRODUCTS, db.session)
+            if inserted > 0:
+                print(f"Inserted {inserted} new curated products.")
+            current_count = Product.query.count()
+            if current_count < 120:
+                extra_needed = 120 - current_count
+                print(f"Expanding catalog with {extra_needed} products...")
+                PriceScraperEngine.generate_and_insert_infinite_products(count=extra_needed, db_session=db.session)
 
-        print(f"Database ready with {Product.query.count()} total products across all categories.")
+        print(f"Database ready with {current_count} total products across all categories.")
 
-seed_database()
+# seed_database() called in __main__
 
 def start_scheduler():
     # Avoid duplicate scheduler instances in Werkzeug parent reloader process
@@ -296,8 +336,8 @@ def redirect_google_shopping(product_id):
 def redirect_to_store(price_id):
     """
     Buyhatke-style intermediate transition controller.
-    Displays a branded 'Redirecting you securely...' screen while resolving
-    and forwarding the user directly to the single product page (Amazon /dp/ASIN, Flipkart /p/itm, etc.).
+    Resolves and forwards the user directly to the exact product page (Flipkart /p/<pid>, Amazon /dp/<ASIN>, Croma /p/<sku>, etc.).
+    Logs exact debugging information as required.
     """
     price_obj = db.session.get(Price, price_id)
     if not price_obj:
@@ -306,15 +346,73 @@ def redirect_to_store(price_id):
 
     product = price_obj.product
     retailer = price_obj.retailer
-    target_url = price_obj.resolve_single_product_url()
+    r_slug = (retailer.slug if retailer else "amazon").lower().strip()
+    product_name = product.name if product else "Product"
+    prod_brand = product.brand if product else ""
 
-    return render_template(
-        'redirect_outbound.html',
-        product=product,
-        retailer=retailer,
-        price=price_obj,
-        target_url=target_url
+    try:
+        target_url = price_obj.resolve_single_product_url()
+    except Exception:
+        db.session.rollback()
+        target_url = price_obj.effective_product_url
+
+    try:
+        from services.affiliate import build_affiliate_url, extract_amazon_asin
+        target_url = build_affiliate_url(target_url, r_slug, product_name, prod_brand, price_obj.retailer_product_id)
+        if r_slug == "amazon":
+            asin_code = extract_amazon_asin(target_url, price_obj.retailer_product_id)
+            product_id_val = asin_code or price_obj.retailer_product_id or str(product.id if product else "")
+        else:
+            product_id_val = price_obj.retailer_product_id or str(product.id if product else "")
+    except Exception:
+        product_id_val = price_obj.retailer_product_id or str(product.id if product else "")
+
+    url_type = price_obj.effective_url_type
+    retailer_name = retailer.name if retailer else "Retailer"
+
+    # Output debugging log in exact required format
+    log_output = (
+        f"\n========================================\n"
+        f"Retailer:\n{retailer_name}\n\n"
+        f"Product:\n{product_name}\n\n"
+        f"Price:\nRs. {price_obj.price:,.0f} (₹{price_obj.price:,.0f})\n\n"
+        f"Product ID:\n{product_id_val}\n\n"
+        f"Product URL:\n{target_url}\n\n"
+        f"URL Type:\n{url_type}\n"
+        f"========================================"
     )
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+    try:
+        print(log_output)
+    except Exception:
+        print(log_output.encode('ascii', errors='replace').decode('ascii'))
+    try:
+        app.logger.info(log_output)
+    except Exception:
+        pass
+
+    if not target_url or target_url == "#" or not str(target_url).startswith("http"):
+        prod_name = (product.name if product else "").strip()
+        prod_brand = (product.brand if product else "").strip()
+        r_slug = (retailer.slug if retailer else "amazon").lower().strip()
+        target_url = Price.generate_direct_store_url(prod_name, prod_brand, r_slug)
+
+    # If requested with ?preview=1, show intermediate transition screen
+    if request.args.get('preview') == '1':
+        return render_template(
+            'redirect_outbound.html',
+            product=product,
+            retailer=retailer,
+            price=price_obj,
+            target_url=target_url,
+            url_type=url_type
+        )
+
+    # Directly and immediately forward user to official retailer product page
+    return redirect(target_url, code=302)
 
 @app.route('/compare')
 @app.route('/comparison')
@@ -409,37 +507,108 @@ def contact():
 
 # ================= AUTHENTICATION =================
 
+EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+USERNAME_REGEX = re.compile(r'^[a-zA-Z0-9_.-]{3,30}$')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
+        identifier = (request.form.get('username') or '').strip()
+        password = request.form.get('password') or ''
+        
+        errors = []
+        if not identifier:
+            errors.append("Please enter your username or registered email address.")
+        if not password:
+            errors.append("Please enter your password.")
+            
+        if errors:
+            for err in errors:
+                flash(err, "danger")
+            return render_template('auth/login.html', username=identifier)
+            
+        # Case-insensitive lookup by username or email
+        user = User.query.filter(
+            or_(
+                func.lower(User.username) == identifier.lower(),
+                func.lower(User.email) == identifier.lower()
+            )
+        ).first()
+
         if user and user.check_password(password):
             login_user(user)
-            flash("Successfully logged in!", "success")
+            flash(f"Welcome back, {user.username}! Successfully logged in.", "success")
+            next_url = request.args.get('next')
+            if next_url and next_url.startswith('/'):
+                return redirect(next_url)
             return redirect(url_for('home'))
-        flash("Invalid username or password.", "danger")
+            
+        flash("Invalid username/email or password. Please verify your credentials.", "danger")
+        return render_template('auth/login.html', username=identifier)
+
     return render_template('auth/login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
     if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        if User.query.filter_by(username=username).first():
-            flash("Username already taken.", "danger")
-        elif User.query.filter_by(email=email).first():
-            flash("Email already registered.", "danger")
-        else:
-            user = User(username=username, email=email)
-            user.set_password(password)
-            db.session.add(user)
-            db.session.commit()
-            login_user(user)
-            flash("Registration successful!", "success")
-            return redirect(url_for('home'))
+        username = (request.form.get('username') or '').strip()
+        email = (request.form.get('email') or '').strip().lower()
+        password = request.form.get('password') or ''
+        confirm_password = request.form.get('confirm_password') or ''
+
+        errors = []
+
+        # 1. Validate Username
+        if not username:
+            errors.append("Username is required.")
+        elif len(username) < 3 or len(username) > 30:
+            errors.append("Username must be between 3 and 30 characters long.")
+        elif not USERNAME_REGEX.match(username):
+            errors.append("Username can only contain letters, numbers, underscores, hyphens, and periods (no spaces).")
+        elif User.query.filter(func.lower(User.username) == username.lower()).first():
+            errors.append("Username is already taken. Please choose another username.")
+
+        # 2. Validate Email
+        if not email:
+            errors.append("Email address is required.")
+        elif len(email) > 120:
+            errors.append("Email address is too long (maximum 120 characters).")
+        elif not EMAIL_REGEX.match(email):
+            errors.append("Please enter a valid email address (e.g., alex@example.com).")
+        elif User.query.filter(func.lower(User.email) == email.lower()).first():
+            errors.append("Email address is already registered. Please log in or use another email.")
+
+        # 3. Validate Password
+        if not password:
+            errors.append("Password is required.")
+        elif len(password) < 6:
+            errors.append("Password must be at least 6 characters long.")
+        elif not password.strip():
+            errors.append("Password cannot consist solely of whitespace.")
+            
+        # 4. Validate Confirm Password (if supplied by the form)
+        if confirm_password and password != confirm_password:
+            errors.append("Passwords do not match. Please ensure both passwords match.")
+
+        if errors:
+            for err in errors:
+                flash(err, "danger")
+            return render_template('auth/register.html', username=username, email=email)
+
+        user = User(username=username, email=email)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        login_user(user)
+        flash("Registration successful! Welcome to RigRate.", "success")
+        return redirect(url_for('home'))
+
     return render_template('auth/register.html')
 
 @app.route('/logout')
@@ -704,11 +873,19 @@ def api_live_fluctuations():
         "timestamp": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
     })
 
+_market_pulse_cache = {"timestamp": 0, "data": []}
+
 @app.route('/api/live/market-pulse')
 def api_live_market_pulse():
     """
     Lightweight streaming ticker endpoint for the global navigation ticker bar.
+    Cached for 60 seconds to prevent running 120+ queries on every 20-second poll.
     """
+    import time
+    now = time.time()
+    if now - _market_pulse_cache["timestamp"] < 60 and _market_pulse_cache["data"]:
+        return jsonify({"pulse": _market_pulse_cache["data"]})
+
     fluctuations = PriceScraperEngine.get_live_fluctuations(limit=15)
     pulse_items = []
     
@@ -726,6 +903,8 @@ def api_live_market_pulse():
             "time_ago": item["last_changed"]
         })
 
+    _market_pulse_cache["timestamp"] = now
+    _market_pulse_cache["data"] = pulse_items
     return jsonify({"pulse": pulse_items})
 
 @app.route('/api/live/simulate-fluctuations', methods=['POST'])
@@ -738,12 +917,15 @@ def api_live_simulate_fluctuations():
     product_ids = data.get('product_ids', None)
 
     updated = PriceScraperEngine.simulate_live_fluctuations(count=count, product_ids=product_ids, db_session=db.session)
+    # Clear cache so updates show immediately
+    _market_pulse_cache["timestamp"] = 0
     return jsonify({
         "success": True,
         "message": f"Successfully simulated real-time market fluctuations on {len(updated)} products.",
         "updated": updated
     })
 
+@app.route('/api/products/<int:product_id>/history')
 @app.route('/api/products/<int:product_id>/live-status')
 def api_product_live_status(product_id):
     """
@@ -902,6 +1084,8 @@ def api_search_suggestions():
             if len(suggestions) >= 8:
                 break
 
+    return jsonify({"suggestions": sorted(list(suggestions))})
+
 @app.route('/api/assistant/chat', methods=['POST'])
 def api_assistant_chat():
     """
@@ -933,8 +1117,9 @@ def api_assistant_chat():
         })
 
 if __name__ == '__main__':
+    seed_database()
     start_scheduler()
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000, threaded=True)
 
 
 

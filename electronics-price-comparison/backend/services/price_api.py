@@ -408,14 +408,17 @@ class PriceAPIService:
                 logger.info(f"Filtered refurbished store '{retailer_name}' for query '{query}'")
                 continue
             
-            product_url = cls.extract_direct_retailer_url(item, title, retailer_slug, raw_source)
-            product_id = str(item.get("product_id") or "")
+            url_info = cls.extract_direct_retailer_url(item, title, retailer_slug, raw_source, api_key=api_key)
+            product_url = url_info["product_url"]
+            url_type = url_info["url_type"]
+            retailer_product_id = url_info["retailer_product_id"] or str(item.get("product_id") or "")
             thumbnail = item.get("thumbnail") or ""
             delivery_text = item.get("delivery") or "Standard Delivery"
             is_in_stock = item.get("in_stock", True)
             availability = "In Stock" if is_in_stock else "Out of Stock"
 
             extracted_prices.append({
+                "retailer": retailer_name,
                 "retailer_name": retailer_name,
                 "retailer_slug": retailer_slug,
                 "raw_source": raw_source,
@@ -424,8 +427,10 @@ class PriceAPIService:
                 "availability": availability,
                 "delivery": delivery_text,
                 "product_name": item.get("title", query),
-                "product_id": product_id,
+                "product_id": retailer_product_id,
                 "product_url": product_url,
+                "url_type": url_type,
+                "retailer_product_id": retailer_product_id,
                 "product_image": thumbnail,
                 "rating": item.get("rating"),
                 "review_count": item.get("reviews"),
@@ -686,13 +691,67 @@ class PriceAPIService:
             return None, None
 
     @classmethod
-    def extract_direct_retailer_url(cls, item: Dict[str, Any], query: str, retailer_slug: str, raw_source: str = "") -> str:
+    def is_single_product_url(cls, url: str) -> bool:
+        """Determines if the given URL points to a specific single product page rather than a search query."""
+        if not url or url == "#":
+            return False
+        u = url.lower().strip()
+        if "/search" in u or "/s?k=" in u or "searchb" in u or "/s?" in u or "query=" in u or "route=product/search" in u:
+            return False
+        if "amazon." in u and ("/dp/" in u or "/gp/product/" in u):
+            return True
+        if "flipkart." in u and "/p/" in u:
+            return True
+        if "croma." in u and "/p/" in u:
+            return True
+        if "reliancedigital." in u and "/p/" in u:
+            return True
+        if "vijaysales." in u and re.search(r"/\d{4,8}(?:[/?#]|$)", u):
+            return True
+        if any(dom in u for dom in ["fktr.in", "ekaro.in", "linkredirect.in", "linksredirect.com"]):
+            return True
+        if "/product/" in u or "/item/" in u or "/p/" in u:
+            return True
+        return False
+
+    @staticmethod
+    def _extract_retailer_product_id(url: str, retailer_slug: str = "") -> str:
+        """Extracts canonical retailer ID (ASIN, Flipkart PID, Croma SKU) from product URL."""
+        if not url:
+            return ""
+        if "amazon." in url:
+            m = re.search(r"/dp/([A-Z0-9]{10})", url)
+            if m:
+                return m.group(1)
+        elif "flipkart." in url:
+            m = re.search(r"pid=([A-Z0-9]+)", url) or re.search(r"/p/(itm[a-zA-Z0-9]+)", url)
+            if m:
+                return m.group(1)
+        elif "croma." in url:
+            m = re.search(r"/p/(\d+)", url)
+            if m:
+                return m.group(1)
+        elif "reliancedigital." in url:
+            m = re.search(r"/p/(\d+)", url)
+            if m:
+                return m.group(1)
+        elif "vijaysales." in url:
+            m = re.search(r"/(\d{4,8})(?:[/?#]|$)", url)
+            if m:
+                return m.group(1)
+        return ""
+
+    @classmethod
+    def extract_direct_retailer_url(cls, item: Dict[str, Any], query: str, retailer_slug: str, raw_source: str = "", api_key: str = "") -> Dict[str, str]:
         """
         Extracts genuine direct retailer store link for the product from SerpApi response.
-        Unwraps any Google redirects and falls back to the merchant's direct product search URL
-        (Amazon, Flipkart, Croma, Reliance Digital, Vijay Sales, etc.) instead of redirecting to Google Shopping.
+        If direct single product URL is available, marks URL as DIRECT_PRODUCT.
+        Otherwise falls back to search URL and marks as SEARCH_FALLBACK.
+        Never claims a search URL is an exact product link.
         """
-        # 1. Check direct link or product link for non-Google target
+        r_slug = (retailer_slug or "").lower().strip()
+
+        # 1. Check direct link or product link for un-redirected or un-wrapped target
         candidates = [item.get("link"), item.get("product_link")]
         for link in candidates:
             if not link:
@@ -702,38 +761,70 @@ class PriceAPIService:
                 qs = urllib.parse.parse_qs(parsed.query)
                 for param in ['q', 'url', 'adurl', 'direct_url']:
                     if param in qs and qs[param][0].startswith('http') and 'google.' not in qs[param][0]:
-                        return qs[param][0]
-            elif link.startswith('http'):
-                return link
+                        unwrapped = qs[param][0]
+                        if cls.is_single_product_url(unwrapped):
+                            pid = cls._extract_retailer_product_id(unwrapped, r_slug)
+                            return {
+                                "product_url": unwrapped,
+                                "url_type": "DIRECT_PRODUCT",
+                                "retailer_product_id": pid
+                            }
+            elif link.startswith('http') and cls.is_single_product_url(link):
+                pid = cls._extract_retailer_product_id(link, r_slug)
+                return {
+                    "product_url": link,
+                    "url_type": "DIRECT_PRODUCT",
+                    "retailer_product_id": pid
+                }
 
-        # 2. Direct retailer store URL generator
+        # 2. Check SerpApi Immersive Product API (engine=google_immersive_product)
+        immersive_url = item.get("serpapi_immersive_product_api")
+        if immersive_url and api_key:
+            try:
+                sep = "&" if "?" in immersive_url else "?"
+                imm_res = requests.get(f"{immersive_url}{sep}api_key={api_key}", timeout=6)
+                if imm_res.status_code == 200:
+                    imm_json = imm_res.json()
+                    stores = imm_json.get("product_results", {}).get("stores", [])
+                    for s in stores:
+                        s_name = (s.get("name") or "").lower()
+                        s_link = s.get("link") or ""
+                        if r_slug in s_name and cls.is_single_product_url(s_link):
+                            pid = cls._extract_retailer_product_id(s_link, r_slug)
+                            return {
+                                "product_url": s_link,
+                                "url_type": "DIRECT_PRODUCT",
+                                "retailer_product_id": pid
+                            }
+            except Exception as e:
+                logger.debug(f"Immersive product API fetch error for '{query}': {e}")
+
+        # 3. Check Canonical Product Registry
+        try:
+            from services.asin_resolver import resolve_canonical_single_url
+            canonical_url = resolve_canonical_single_url(query, "", r_slug)
+            if canonical_url and cls.is_single_product_url(canonical_url):
+                pid = cls._extract_retailer_product_id(canonical_url, r_slug)
+                return {
+                    "product_url": canonical_url,
+                    "url_type": "DIRECT_PRODUCT",
+                    "retailer_product_id": pid
+                }
+        except Exception:
+            pass
+
+        # 4. Safe Fallback: Store Search URL (Explicitly classified as SEARCH_FALLBACK)
         encoded = urllib.parse.quote_plus(query)
-        r_slug = (retailer_slug or "").lower().strip()
         retailer_urls = {
             "amazon": f"https://www.amazon.in/s?k={encoded}",
             "flipkart": f"https://www.flipkart.com/search?q={encoded}",
             "croma": f"https://www.croma.com/searchB?q={encoded}%3Arelevance",
             "reliance": f"https://www.reliancedigital.in/search?q={encoded}",
             "vijaysales": f"https://www.vijaysales.com/search/{encoded}",
-            "tatacliq": f"https://www.tatacliq.com/search/?searchCategory=all&text={encoded}",
-            "ajio": f"https://www.ajio.com/search/?text={encoded}",
-            "poorvika": f"https://www.poorvika.com/search?q={encoded}",
-            "mdcomputers": f"https://mdcomputers.in/index.php?category_id=0&search={encoded}&submit_search=&route=product%2Fsearch",
-            "vedantcomputers": f"https://www.vedantcomputers.com/index.php?route=product/search&search={encoded}",
-            "vedant": f"https://www.vedantcomputers.com/index.php?route=product/search&search={encoded}",
-            "primeabgb": f"https://www.primeabgb.com/?post_type=product&s={encoded}",
-            "ovantica": f"https://ovantica.com/search?q={encoded}"
         }
-
-        if r_slug in retailer_urls:
-            return retailer_urls[r_slug]
-
-        # 3. Check if raw_source has a domain name
-        if raw_source and "." in raw_source and not any(g in raw_source.lower() for g in ["google", "serpapi"]):
-            clean_domain = raw_source.strip().split()[0].lower()
-            if not clean_domain.startswith("http"):
-                clean_domain = f"https://www.{clean_domain}" if not clean_domain.startswith("www.") else f"https://{clean_domain}"
-            if re.match(r"^https?://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", clean_domain):
-                return f"{clean_domain.rstrip('/')}/search?q={encoded}"
-
-        return f"https://www.amazon.in/s?k={encoded}"
+        fallback = retailer_urls.get(r_slug, f"https://www.amazon.in/s?k={encoded}")
+        return {
+            "product_url": fallback,
+            "url_type": "SEARCH_FALLBACK",
+            "retailer_product_id": ""
+        }

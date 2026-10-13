@@ -73,6 +73,16 @@
                         </div>
 
                         <div class="d-flex gap-2 flex-wrap align-items-center">
+                            <!-- Prominent Buy Now at Lowest Price Button -->
+                            {% if product.prices %}
+                                {% set lowest_store = (product.prices | sort(attribute='price'))[0] %}
+                                <a href="{{ url_for('redirect_to_store', price_id=lowest_store.id) }}" target="_blank" rel="noopener noreferrer" class="btn btn-success fw-bold rounded-pill px-3.5 py-2 shadow-sm d-inline-flex align-items-center gap-1.5" title="Buy at {{ lowest_store.retailer.name if lowest_store.retailer else 'Store' }}">
+                                    <i class="bi bi-cart-check-fill"></i>
+                                    <span>Buy Now</span>
+                                    <i class="bi bi-box-arrow-up-right fs-xs"></i>
+                                </a>
+                            {% endif %}
+
                             <!-- Wishlist Button -->
                             <form action="{{ url_for('toggle_wishlist_id', product_id=product.id) }}" method="POST" class="m-0">
                                 <input type="hidden" name="product_id" value="{{ product.id }}">
@@ -82,7 +92,7 @@
                             </form>
 
                             <!-- Direct Google Shopping Link -->
-                            <a href="{{ url_for('redirect_google_shopping', product_id=product.id) }}" target="_blank" class="btn btn-outline-dark fw-semibold rounded-pill px-3 py-2 shadow-xs d-inline-flex align-items-center gap-2" title="Search directly on Google Shopping">
+                            <a href="{{ url_for('redirect_google_shopping', product_id=product.id) }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark fw-semibold rounded-pill px-3 py-2 shadow-xs d-inline-flex align-items-center gap-2" title="Search directly on Google Shopping">
                                 <i class="bi bi-google text-primary"></i>
                                 <span>Google Shopping</span>
                                 <i class="bi bi-box-arrow-up-right fs-xs text-muted"></i>
@@ -227,7 +237,7 @@
                                     </div>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <a href="{{ url_for('redirect_to_store', price_id=store.id) }}" target="_blank" class="btn {% if store.is_lowest %}btn-success{% else %}btn-outline-primary{% endif %} btn-sm rounded-pill px-3 shadow-xs">
+                                    <a href="{{ url_for('redirect_to_store', price_id=store.id) }}" target="_blank" rel="noopener noreferrer" class="btn {% if store.is_lowest %}btn-success{% else %}btn-outline-primary{% endif %} btn-sm rounded-pill px-3 shadow-xs">
                                         Buy Now <i class="bi bi-box-arrow-up-right ms-1"></i>
                                     </a>
                                 </td>

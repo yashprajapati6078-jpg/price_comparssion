@@ -125,7 +125,7 @@
                             {% if cat.name == 'PC Components' %}<i class="bi bi-star-fill text-warning me-1"></i>{% endif %}{{ cat.name }}
                         </h6>
                         <span class="badge bg-light text-primary fw-bold border rounded-pill fs-xs">
-                            {{ cat.products|length if cat.products is defined else (cat.count if cat.count is defined else 0) }} Products
+                            {{ cat.product_count if cat.product_count is defined else (cat.products|length if cat.products is defined else 0) }} Products
                         </span>
                     </div>
                 </a>

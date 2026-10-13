@@ -1,50 +1,324 @@
 {% extends 'base.html' %}
 
-{% block title %}Create Account | ElectroCompare{% endblock %}
+{% block title %}Create Account | RigRate Price Comparison{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="col-md-7 col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden position-relative">
                 <div class="card-body p-4 p-md-5">
                     <div class="text-center mb-4">
-                        <div class="bg-success-subtle text-success d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-person-plus fs-2"></i>
+                        <div class="bg-success-subtle text-success d-inline-flex align-items-center justify-content-center rounded-circle mb-3 shadow-xs" style="width: 64px; height: 64px;">
+                            <i class="bi bi-person-plus-fill fs-2"></i>
                         </div>
-                        <h3 class="fw-bold">Create an Account</h3>
-                        <p class="text-muted fs-sm">Get price drop notifications and save items to your wishlist</p>
+                        <h3 class="fw-bold tracking-tight mb-1">Create an Account</h3>
+                        <p class="text-muted fs-sm">Track real-time price drops across Amazon, Flipkart, Croma & more</p>
                     </div>
 
-                    <form action="{{ url_for('register') }}" method="POST">
+                    <form action="{{ url_for('register') }}" method="POST" class="needs-validation" id="registerForm" novalidate>
+                        <!-- Username -->
                         <div class="mb-3">
-                            <label for="regUsername" class="form-label fw-semibold">Username</label>
-                            <input type="text" name="username" id="regUsername" class="form-control bg-light" placeholder="Choose a username" required>
+                            <label for="regUsername" class="form-label fw-semibold fs-sm text-dark d-flex justify-content-between">
+                                <span>Username</span>
+                                <span class="text-muted fs-xs fw-normal">3–30 characters</span>
+                            </label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-person"></i></span>
+                                <input type="text" 
+                                       name="username" 
+                                       id="regUsername" 
+                                       class="form-control bg-light border-start-0" 
+                                       placeholder="e.g. tech_hunter" 
+                                       value="{{ username or request.form.get('username', '') }}"
+                                       minlength="3" 
+                                       maxlength="30" 
+                                       pattern="^[a-zA-Z0-9_.-]{3,30}$"
+                                       required
+                                       autocomplete="username">
+                                <div class="invalid-feedback" id="regUsernameFeedback">
+                                    Username must be 3–30 characters (letters, numbers, '.', '_', or '-'). No spaces.
+                                </div>
+                            </div>
+                            <div class="form-text fs-xs text-muted">
+                                <i class="bi bi-info-circle me-1"></i>Letters, numbers, underscores, dots, or hyphens.
+                            </div>
                         </div>
 
+                        <!-- Email -->
                         <div class="mb-3">
-                            <label for="regEmail" class="form-label fw-semibold">Email Address</label>
-                            <input type="email" name="email" id="regEmail" class="form-control bg-light" placeholder="name@example.com" required>
+                            <label for="regEmail" class="form-label fw-semibold fs-sm text-dark d-flex justify-content-between">
+                                <span>Email Address</span>
+                                <span class="text-muted fs-xs fw-normal">For deal & price drop alerts</span>
+                            </label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-envelope"></i></span>
+                                <input type="email" 
+                                       name="email" 
+                                       id="regEmail" 
+                                       class="form-control bg-light border-start-0" 
+                                       placeholder="name@example.com" 
+                                       value="{{ email or request.form.get('email', '') }}"
+                                       maxlength="120"
+                                       required
+                                       autocomplete="email">
+                                <div class="invalid-feedback" id="regEmailFeedback">
+                                    Please enter a valid email address (e.g., name@example.com).
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="regPassword" class="form-label fw-semibold fs-sm text-dark d-flex justify-content-between">
+                                <span>Password</span>
+                                <span class="text-muted fs-xs fw-normal">Minimum 6 characters</span>
+                            </label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-lock"></i></span>
+                                <input type="password" 
+                                       name="password" 
+                                       id="regPassword" 
+                                       class="form-control bg-light border-start-0 border-end-0" 
+                                       placeholder="Enter at least 6 characters" 
+                                       minlength="6" 
+                                       required
+                                       autocomplete="new-password">
+                                <button class="btn btn-light border border-start-0 text-muted px-3" 
+                                        type="button" 
+                                        id="toggleRegPasswordBtn" 
+                                        aria-label="Toggle password visibility"
+                                        tabindex="-1">
+                                    <i class="bi bi-eye" id="toggleRegPasswordIcon"></i>
+                                </button>
+                                <div class="invalid-feedback" id="regPasswordFeedback">
+                                    Password must be at least 6 characters long.
+                                </div>
+                            </div>
+                            
+                            <!-- Password Strength Indicator -->
+                            <div class="mt-2">
+                                <div class="progress" style="height: 5px;">
+                                    <div class="progress-bar bg-danger" id="passwordStrengthBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <small class="fs-xs text-muted">Strength: <span id="passwordStrengthText" class="fw-semibold text-secondary">None</span></small>
+                                    <small class="fs-xs text-muted">Mix uppercase, numbers & symbols</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
                         <div class="mb-4">
-                            <label for="regPassword" class="form-label fw-semibold">Password</label>
-                            <input type="password" name="password" id="regPassword" class="form-control bg-light" placeholder="Minimum 6 characters" required minlength="6">
+                            <label for="regConfirmPassword" class="form-label fw-semibold fs-sm text-dark d-flex justify-content-between">
+                                <span>Confirm Password</span>
+                                <span class="text-muted fs-xs fw-normal">Must match password</span>
+                            </label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-shield-lock"></i></span>
+                                <input type="password" 
+                                       name="confirm_password" 
+                                       id="regConfirmPassword" 
+                                       class="form-control bg-light border-start-0 border-end-0" 
+                                       placeholder="Re-enter password" 
+                                       minlength="6" 
+                                       required
+                                       autocomplete="new-password">
+                                <button class="btn btn-light border border-start-0 text-muted px-3" 
+                                        type="button" 
+                                        id="toggleConfirmPasswordBtn" 
+                                        aria-label="Toggle confirm password visibility"
+                                        tabindex="-1">
+                                    <i class="bi bi-eye" id="toggleConfirmPasswordIcon"></i>
+                                </button>
+                                <div class="invalid-feedback" id="regConfirmPasswordFeedback">
+                                    Passwords do not match.
+                                </div>
+                            </div>
+                            <div id="matchHelper" class="form-text fs-xs mt-1 d-none"></div>
                         </div>
 
-                        <button type="submit" class="btn btn-success w-100 py-2 rounded-pill fw-bold mb-3">
-                            Register Account <i class="bi bi-check-lg ms-1"></i>
+                        <button type="submit" class="btn btn-success w-100 py-2.5 rounded-pill fw-bold mb-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                            <span>Create Free Account</span>
+                            <i class="bi bi-arrow-right"></i>
                         </button>
                     </form>
 
                     <div class="text-center pt-3 border-top">
                         <p class="text-muted fs-sm mb-0">
-                            Already have an account? <a href="{{ url_for('login') }}" class="fw-bold text-primary text-decoration-none">Login here</a>
+                            Already have an account? 
+                            <a href="{{ url_for('login') }}" class="fw-bold text-primary text-decoration-none">
+                                Login here <i class="bi bi-chevron-right fs-xs"></i>
+                            </a>
                         </p>
                     </div>
+                </div>
+            </div>
+
+            <!-- Features Reminder -->
+            <div class="row g-2 mt-3 text-center text-muted fs-xs">
+                <div class="col-4">
+                    <i class="bi bi-bell-fill text-warning me-1"></i> Instant Price Alerts
+                </div>
+                <div class="col-4">
+                    <i class="bi bi-heart-fill text-danger me-1"></i> Sync Wishlists
+                </div>
+                <div class="col-4">
+                    <i class="bi bi-graph-up-arrow text-primary me-1"></i> Price History Charts
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('registerForm');
+    const usernameInput = document.getElementById('regUsername');
+    const emailInput = document.getElementById('regEmail');
+    const passwordInput = document.getElementById('regPassword');
+    const confirmInput = document.getElementById('regConfirmPassword');
+    const strengthBar = document.getElementById('passwordStrengthBar');
+    const strengthText = document.getElementById('passwordStrengthText');
+    const matchHelper = document.getElementById('matchHelper');
+
+    // Password visibility toggles
+    function setupToggle(btnId, inputId, iconId) {
+        const btn = document.getElementById(btnId);
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (btn && input && icon) {
+            btn.addEventListener('click', function () {
+                const isPassword = input.getAttribute('type') === 'password';
+                input.setAttribute('type', isPassword ? 'text' : 'password');
+                icon.classList.toggle('bi-eye', !isPassword);
+                icon.classList.toggle('bi-eye-slash', isPassword);
+            });
+        }
+    }
+    setupToggle('toggleRegPasswordBtn', 'regPassword', 'toggleRegPasswordIcon');
+    setupToggle('toggleConfirmPasswordBtn', 'regConfirmPassword', 'toggleConfirmPasswordIcon');
+
+    // Password strength evaluator
+    function evaluatePasswordStrength(pwd) {
+        if (!pwd) return { score: 0, text: 'None', color: 'bg-secondary' };
+        let score = 0;
+        if (pwd.length >= 6) score += 25;
+        if (pwd.length >= 10) score += 25;
+        if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score += 25;
+        if (/[0-9]/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) score += 25;
+
+        if (score <= 25) return { score: 25, text: 'Weak', color: 'bg-danger' };
+        if (score <= 50) return { score: 50, text: 'Fair', color: 'bg-warning' };
+        if (score <= 75) return { score: 75, text: 'Good', color: 'bg-info' };
+        return { score: 100, text: 'Strong', color: 'bg-success' };
+    }
+
+    if (passwordInput && strengthBar && strengthText) {
+        passwordInput.addEventListener('input', function () {
+            const pwd = passwordInput.value;
+            const res = evaluatePasswordStrength(pwd);
+            strengthBar.style.width = res.score + '%';
+            strengthBar.className = 'progress-bar ' + res.color;
+            strengthText.textContent = res.text;
+            strengthText.className = 'fw-semibold ' + res.color.replace('bg-', 'text-');
+
+            validatePasswordMatch();
+        });
+    }
+
+    // Confirm Password Matching
+    function validatePasswordMatch() {
+        if (!confirmInput || !passwordInput) return true;
+        const p1 = passwordInput.value;
+        const p2 = confirmInput.value;
+
+        if (!p2) {
+            confirmInput.setCustomValidity('Please confirm your password.');
+            if (matchHelper) matchHelper.classList.add('d-none');
+            return false;
+        }
+
+        if (p1 !== p2) {
+            confirmInput.setCustomValidity('Passwords do not match.');
+            if (matchHelper) {
+                matchHelper.className = 'form-text fs-xs mt-1 text-danger';
+                matchHelper.innerHTML = '<i class="bi bi-x-circle me-1"></i>Passwords do not match';
+                matchHelper.classList.remove('d-none');
+            }
+            return false;
+        } else {
+            confirmInput.setCustomValidity('');
+            if (matchHelper) {
+                matchHelper.className = 'form-text fs-xs mt-1 text-success';
+                matchHelper.innerHTML = '<i class="bi bi-check-circle me-1"></i>Passwords match';
+                matchHelper.classList.remove('d-none');
+            }
+            return true;
+        }
+    }
+
+    if (confirmInput) {
+        confirmInput.addEventListener('input', validatePasswordMatch);
+    }
+
+    // Username regex check live validation
+    const usernameRegex = /^[a-zA-Z0-9_.-]{3,30}$/;
+    if (usernameInput) {
+        usernameInput.addEventListener('input', function () {
+            const val = usernameInput.value.trim();
+            if (!val) {
+                usernameInput.setCustomValidity('Username is required.');
+            } else if (val.length < 3 || val.length > 30) {
+                usernameInput.setCustomValidity('Username must be 3 to 30 characters.');
+            } else if (!usernameRegex.test(val)) {
+                usernameInput.setCustomValidity('Invalid characters. Letters, numbers, _, ., - only.');
+            } else {
+                usernameInput.setCustomValidity('');
+            }
+        });
+    }
+
+    // Email regex check live validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailInput) {
+        emailInput.addEventListener('input', function () {
+            const val = emailInput.value.trim();
+            if (!val) {
+                emailInput.setCustomValidity('Email is required.');
+            } else if (!emailRegex.test(val)) {
+                emailInput.setCustomValidity('Please enter a valid email address.');
+            } else {
+                emailInput.setCustomValidity('');
+            }
+        });
+    }
+
+    // Form submit check
+    if (form) {
+        form.addEventListener('submit', function (event) {
+            let isValid = true;
+
+            // Trim fields
+            if (usernameInput) usernameInput.value = usernameInput.value.trim();
+            if (emailInput) emailInput.value = emailInput.value.trim();
+
+            const isUsernameValid = usernameInput && usernameRegex.test(usernameInput.value);
+            const isEmailValid = emailInput && emailRegex.test(emailInput.value);
+            const isPasswordValid = passwordInput && passwordInput.value.length >= 6 && passwordInput.value.trim().length > 0;
+            const isMatch = validatePasswordMatch();
+
+            if (!isUsernameValid || !isEmailValid || !isPasswordValid || !isMatch || !form.checkValidity()) {
+                isValid = false;
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            form.classList.add('was-validated');
+        });
+    }
+});
+</script>
 {% endblock %}

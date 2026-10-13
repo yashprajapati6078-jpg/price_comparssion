@@ -77,7 +77,7 @@
                     </ul>
 
                     <div class="mt-auto pt-3 border-top text-center">
-                        <a href="{{ url_for('redirect_to_store', price_id=store.id) }}" target="_blank" class="btn {% if store.is_lowest %}btn-success{% else %}btn-primary{% endif %} w-100 rounded-pill py-2 fw-bold">
+                        <a href="{{ url_for('redirect_to_store', price_id=store.id) }}" target="_blank" rel="noopener noreferrer" class="btn {% if store.is_lowest %}btn-success{% else %}btn-primary{% endif %} w-100 rounded-pill py-2 fw-bold">
                             Go to Store <i class="bi bi-box-arrow-up-right ms-1"></i>
                         </a>
                     </div>

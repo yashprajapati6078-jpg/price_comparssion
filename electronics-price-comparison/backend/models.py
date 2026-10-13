@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
@@ -343,6 +344,10 @@ class Price(db.Model):
     rating = db.Column(db.Float, default=4.5)
     is_lowest = db.Column(db.Boolean, default=False)
     buy_url = db.Column(db.String(500), default="#")
+    direct_url = db.Column(db.String(1000), nullable=True)
+    product_url = db.Column(db.String(1000), nullable=True)
+    url_type = db.Column(db.String(50), default="SEARCH_FALLBACK")
+    retailer_product_id = db.Column(db.String(100), nullable=True)
     last_updated = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __init__(self, **kwargs):
@@ -352,10 +357,10 @@ class Price(db.Model):
     def clean_product_query(product_name: str, brand: str = "") -> str:
         """
         Cleans and normalizes product titles to pure brand + model without clutter.
-        Preserves storage spec and removes accessory/color noise so retailer searches hit exact device.
+        Preserves storage spec and removes accessory/color/tech noise so retailer searches hit exact device.
         """
         import re
-        clean = product_name
+        clean = product_name or ""
 
         # Extract storage or spec (e.g. 128 GB, 256 GB, 512 GB, 1 TB)
         storage_match = re.search(r"(\d+\s*(?:GB|TB))\b", clean, re.IGNORECASE)
@@ -371,12 +376,28 @@ class Price(db.Model):
         if "/" in clean:
             clean = clean.split("/")[0]
 
+        # Remove technical clutter phrases that break retailer search engines
+        clutter_patterns = [
+            r"\bgddr6x\b", r"\bgddr6\b", r"\bfounders edition\b", r"\boc edition\b", r"\bedition\b",
+            r"\bgraphics card\b", r"\bdesktop processor\b", r"\bunlocked processor\b", r"\bflagship processor\b",
+            r"\bprocessor\b", r"\binternal gaming ssd\b", r"\binternal ssd\b", r"\bwith heatsink\b",
+            r"\bwireless active noise canceling headphones\b", r"\bwireless noise canceling headphones\b",
+            r"\bnoise canceling wireless headphones\b", r"\bbluetooth headset\b", r"\bbluetooth headphone with mic\b",
+            r"\bfull-frame mirrorless camera\b", r"\bconsole\b", r"\bslim disc\b", r"\bsmart oled evo tv\b",
+            r"\bsmart tv\b", r"\bgoogle tv\b", r"\bcrystal uhd tv\b", r"\bneo qled 144hz tv\b", r"\bmini-led\b",
+            r"\bcinema oled master series\b", r"\bspecial creator\b", r"\bwireless v2\b", r"\b5g dual sim\b",
+            r"\bpcie\s*4\.0\b", r"\bpcie gen4\b", r"\bnvme\s*m\.2\b", r"\b3d nand\b",
+            r"\b24gb\b", r"\b16gb\b", r"\b12gb\b", r"\b8gb\b", r"\b32gb\b", r"\b64gb\b"
+        ]
+        for pat in clutter_patterns:
+            clean = re.sub(pat, "", clean, flags=re.IGNORECASE)
+
         # Remove dash separators
         clean = re.sub(r"\s*[-–—]\s*", " ", clean)
         clean = re.sub(r"\s+", " ", clean).strip()
 
-        # Re-attach storage specification if not already in title
-        if storage and storage.lower() not in clean.lower():
+        # Re-attach storage specification if it was a phone/tablet/drive and not already present
+        if storage and storage.lower() not in clean.lower() and any(k in clean.lower() for k in ["iphone", "galaxy", "ipad", "pixel", "ssd", "pro", "ultra"]):
             clean = f"{clean} {storage}"
 
         # Normalize any synthetic model names
@@ -385,7 +406,7 @@ class Price(db.Model):
         if brand and brand.lower() not in clean.lower():
             clean = f"{brand} {clean}".strip()
 
-        return clean or product_name.strip()
+        return clean or (product_name or "").strip()
 
     @staticmethod
     def generate_direct_store_url(product_name: str, brand: str = "", retailer_slug: str = "amazon") -> str:
@@ -394,107 +415,192 @@ class Price(db.Model):
         ensuring users land directly on the merchant product search instead of Google Shopping.
         """
         import urllib.parse
+        import re
 
         clean_name = Price.clean_product_query(product_name, brand)
-        encoded = urllib.parse.quote_plus(clean_name)
         r_slug = (retailer_slug or "").lower().strip()
 
-        retailer_urls = {
-            "amazon": f"https://www.amazon.in/s?k={encoded}",
-            "flipkart": f"https://www.flipkart.com/search?q={encoded}",
-            "croma": f"https://www.croma.com/searchB?q={encoded}%3Arelevance",
-            "reliance": f"https://www.reliancedigital.in/search?q={encoded}",
-            "vijaysales": f"https://www.vijaysales.com/search/{encoded}",
-            "tatacliq": f"https://www.tatacliq.com/search/?searchCategory=all&text={encoded}",
-            "ajio": f"https://www.ajio.com/search/?text={encoded}",
-            "poorvika": f"https://www.poorvika.com/search?q={encoded}",
-            "mdcomputers": f"https://mdcomputers.in/index.php?category_id=0&search={encoded}&submit_search=&route=product%2Fsearch",
-            "vedantcomputers": f"https://www.vedantcomputers.com/index.php?route=product/search&search={encoded}",
-            "vedant": f"https://www.vedantcomputers.com/index.php?route=product/search&search={encoded}",
-            "primeabgb": f"https://www.primeabgb.com/?post_type=product&s={encoded}",
-            "ovantica": f"https://ovantica.com/search?q={encoded}"
-        }
-        return retailer_urls.get(r_slug, f"https://www.amazon.in/s?k={encoded}")
+        if r_slug == "croma":
+            try:
+                from services.asin_resolver import resolve_canonical_single_url
+                canon = resolve_canonical_single_url(clean_name, brand, "croma")
+                if canon:
+                    return canon
+            except Exception:
+                pass
+            encoded = urllib.parse.quote_plus(clean_name)
+            return f"https://www.croma.com/searchB?q={encoded}%3Arelevance"
+        elif r_slug == "vijaysales":
+            try:
+                from services.asin_resolver import resolve_canonical_single_url
+                canon = resolve_canonical_single_url(clean_name, brand, "vijaysales")
+                if canon:
+                    return canon
+            except Exception:
+                pass
+            encoded = urllib.parse.quote_plus(clean_name)
+            return f"https://www.vijaysales.com/search-listing?q={encoded}"
+        elif r_slug == "reliance":
+            encoded = urllib.parse.quote_plus(clean_name)
+            return f"https://www.reliancedigital.in/products?q={encoded}"
+        elif r_slug == "flipkart":
+            encoded = urllib.parse.quote_plus(clean_name)
+            return f"https://www.flipkart.com/search?q={encoded}"
+
+        encoded = urllib.parse.quote_plus(clean_name)
+        return f"https://www.amazon.in/s?k={encoded}"
 
     def is_single_product_url(self, url: str) -> bool:
-        """Determines if the given URL points to a specific single product page rather than a search query."""
+        """
+        Determines whether the given URL points to a specific exact single product page
+        rather than a search query or category listing page.
+        """
         if not url or url == "#":
             return False
-        u = url.lower()
-        if "/s?k=" in u or "/search" in u or "query=" in u:
+        u = url.lower().strip()
+
+        # Definite search / query patterns -> NOT an exact product page
+        if "/search" in u or "/s?k=" in u or "searchb" in u or "/s?" in u or "query=" in u or "route=product/search" in u:
             return False
-        if "/dp/" in u or "/gp/product/" in u or "/p/" in u or "/item/" in u:
+
+        # Reject synthetic hashes and broken placeholders
+        if "itm00" in u or "4900000" in u or "b0bg953f9f" in u:
+            return False
+
+        # Amazon single product: /dp/<ASIN> or /gp/product/<ASIN>
+        if "amazon." in u and ("/dp/" in u or "/gp/product/" in u):
             return True
+
+        # Flipkart single product: /p/itm or /p/<id> with product page pattern
+        if "flipkart." in u and "/p/" in u:
+            return True
+
+        # Croma single product: /p/<sku>
+        if "croma." in u and "/p/" in u:
+            return True
+
+        # Reliance Digital single product: /p/<id>
+        if "reliancedigital." in u and "/p/" in u:
+            return True
+
+        # Vijay Sales single product: /<slug>/<id> where id is numeric (e.g. /23812) or /p/
+        if "vijaysales." in u and (re.search(r"/\d{4,8}(?:[/?#]|$)", u) or "/p/" in u):
+            return True
+
+        # Pre-generated direct affiliate links (EarnKaro, CueLinks, etc.)
+        if any(dom in u for dom in ["fktr.in", "ekaro.in", "linkredirect.in", "linksredirect.com"]):
+            return True
+
+        # Generic e-commerce single product (/product/<id>, /item/<id>, /p/<id>)
+        if "/product/" in u or "/item/" in u or "/p/" in u:
+            return True
+
         return False
 
-    def resolve_single_product_url(self) -> str:
-        """
-        Resolves the exact direct single product page (Amazon /dp/ASIN, Flipkart /p/itm, etc.)
-        saving users from landing on a 100+ item search results page.
-        """
-        # 1. If self.buy_url already has a direct single product page link, return it
-        if self.buy_url and self.is_single_product_url(self.buy_url):
-            return self.buy_url
+    @property
+    def effective_url_type(self) -> str:
+        """Returns DIRECT_PRODUCT if URL is an exact single product link, else SEARCH_FALLBACK."""
+        url = self.effective_product_url
+        return "DIRECT_PRODUCT" if self.is_single_product_url(url) else "SEARCH_FALLBACK"
 
+    @property
+    def effective_product_url(self) -> str:
+        """
+        Returns the most specific retailer product URL available.
+        Checks:
+        1. Canonical Product Registry (verified exact URLs take top priority)
+        2. Stored product_url (if single product page and not synthetic hash)
+        3. Stored direct_url (if single product page)
+        4. Existing buy_url (if single product page)
+        5. Targeted store query URL (guarantees exact product without dead links)
+        """
         prod_name = (self.product.name if self.product else "").strip()
         prod_brand = (self.product.brand if self.product else "").strip()
         r_slug = (self.retailer.slug if self.retailer else "amazon").lower().strip()
 
-        # 2. Check canonical ASIN resolver
+        # 1. Resolve via Canonical Product Registry first
         try:
             from services.asin_resolver import resolve_canonical_single_url
             resolved = resolve_canonical_single_url(prod_name, prod_brand, r_slug)
-            if resolved and self.is_single_product_url(resolved):
-                self.buy_url = resolved
-                try:
-                    db.session.commit()
-                except Exception:
-                    pass
+            if resolved:
+                if "b0bg953f9f" in resolved.lower():
+                    resolved = resolved.replace("B0BG953F9F", "B0BSVMLVTD").replace("b0bg953f9f", "B0BSVMLVTD")
                 return resolved
         except Exception:
             pass
 
-        # 3. Fallback to direct store URL
-        return self.direct_buy_url
+        # 2. Stored exact product_url
+        if self.product_url and self.is_single_product_url(self.product_url):
+            p_url = self.product_url
+            if "b0bg953f9f" in p_url.lower():
+                p_url = p_url.replace("B0BG953F9F", "B0BSVMLVTD").replace("b0bg953f9f", "B0BSVMLVTD")
+            return p_url
+
+        # 3. Stored direct_url
+        if self.direct_url and self.is_single_product_url(self.direct_url):
+            d_url = self.direct_url
+            if "b0bg953f9f" in d_url.lower():
+                d_url = d_url.replace("B0BG953F9F", "B0BSVMLVTD").replace("b0bg953f9f", "B0BSVMLVTD")
+            return d_url
+
+        # 4. Existing buy_url
+        if self.buy_url and self.is_single_product_url(self.buy_url):
+            return self.buy_url
+
+        # 5. Targeted merchant store URL
+        fallback_url = Price.generate_direct_store_url(prod_name, prod_brand, r_slug)
+        return fallback_url
+
+    def resolve_single_product_url(self) -> str:
+        """
+        Resolves the exact direct single product page (Amazon /dp/ASIN, Flipkart /p/itm, etc.)
+        with active merchant affiliate parameters attached.
+        """
+        base_url = self.effective_product_url
+        try:
+            from services.affiliate import build_affiliate_url
+            prod_name = (self.product.name if self.product else "").strip()
+            prod_brand = (self.product.brand if self.product else "").strip()
+            r_slug = (self.retailer.slug if self.retailer else "amazon").lower().strip()
+            return build_affiliate_url(base_url, r_slug, prod_name, prod_brand, self.retailer_product_id)
+        except Exception:
+            return base_url
 
     @property
     def direct_buy_url(self):
-        """
-        Returns the genuine direct retailer link (Amazon, Flipkart, Croma, etc.)
-        for the 'Buy Now' button, unwrapping any Google redirects and ensuring
-        users are never redirected to Google Shopping.
-        """
-        import urllib.parse
-
-        if self.buy_url and self.buy_url != "#":
-            if "google." in self.buy_url:
-                parsed = urllib.parse.urlparse(self.buy_url)
-                qs = urllib.parse.parse_qs(parsed.query)
-                for param in ['q', 'url', 'adurl', 'direct_url']:
-                    if param in qs and qs[param][0].startswith('http') and 'google.' not in qs[param][0]:
-                        return qs[param][0]
-            else:
-                return self.buy_url
-
-        prod_name = self.product.name if self.product else "product"
-        prod_brand = self.product.brand if self.product else ""
-        r_slug = self.retailer.slug if self.retailer else "amazon"
-
-        return Price.generate_direct_store_url(prod_name, prod_brand, r_slug)
+        """Maintains backward compatibility returning the affiliate product URL."""
+        return self.resolve_single_product_url()
 
     def to_dict(self):
+        url = self.effective_product_url
+        u_type = self.effective_url_type
+        r_id = self.retailer_product_id or ""
+        if not r_id and "amazon." in url and "/dp/" in url:
+            m = re.search(r"/dp/([A-Z0-9]{10})", url)
+            if m:
+                r_id = m.group(1)
+        elif not r_id and "flipkart." in url:
+            m = re.search(r"pid=([A-Z0-9]+)", url) or re.search(r"/p/(itm[a-zA-Z0-9]+)", url)
+            if m:
+                r_id = m.group(1)
+
         return {
             "id": self.id,
             "product_id": self.product_id,
             "retailer_id": self.retailer_id,
+            "retailer": self.retailer.name if self.retailer else "Retailer",
             "name": self.retailer.name if self.retailer else "Retailer",
+            "product_name": self.product.name if self.product else "",
             "logo_text": self.retailer.name if self.retailer else "Retailer",
             "price": self.price,
             "delivery": self.delivery,
             "rating": self.rating,
             "availability": self.availability,
             "is_lowest": self.is_lowest,
-            "buy_url": self.direct_buy_url,
+            "product_url": url,
+            "buy_url": url,
+            "url_type": u_type,
+            "retailer_product_id": r_id,
             "last_updated": self.last_updated.strftime("%Y-%m-%d %H:%M") if self.last_updated else ""
         }
 
