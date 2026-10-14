@@ -67,18 +67,6 @@
                             </div>
                         </div>
 
-                        <!-- Quick Credentials Helper Pills for Easy Testing -->
-                        <div class="p-2 mb-4 bg-light rounded-3 border border-dashed text-center">
-                            <span class="fs-xs text-muted d-block mb-1"><i class="bi bi-key-fill text-warning me-1"></i>Quick fill test credentials:</span>
-                            <div class="d-flex justify-content-center gap-2">
-                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill py-0 px-2.5 fs-xs quick-fill-btn" data-user="demo" data-pass="demo123">
-                                    demo / demo123
-                                </button>
-                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill py-0 px-2.5 fs-xs quick-fill-btn" data-user="admin" data-pass="admin123">
-                                    admin / admin123
-                                </button>
-                            </div>
-                        </div>
 
                         <button type="submit" class="btn btn-primary w-100 py-2.5 rounded-pill fw-bold mb-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
                             <span>Sign In</span>
@@ -124,15 +112,6 @@ document.addEventListener('DOMContentLoaded', function () {
             togglePasswordIcon.classList.toggle('bi-eye-slash', isPassword);
         });
     }
-
-    // Quick Credential Fill Helpers
-    document.querySelectorAll('.quick-fill-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            if (usernameInput) usernameInput.value = this.dataset.user;
-            if (passwordInput) passwordInput.value = this.dataset.pass;
-            if (form) form.classList.remove('was-validated');
-        });
-    });
 
     // Form validation on submit
     if (form) {
