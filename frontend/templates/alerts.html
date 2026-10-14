@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}My Price Alerts 🔔 | ElectroCompare{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1"><i class="bi bi-bell-fill text-warning me-2"></i>My Price Drop Alerts</h1>
+            <p class="text-muted fs-sm mb-0">Monitor active price drop thresholds and notification status</p>
+        </div>
+        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold">{{ alerts|length }} Active Alerts</span>
+    </div>
+
+    {% if alerts %}
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr class="fs-sm text-uppercase text-muted">
+                                <th class="ps-4">Product</th>
+                                <th>Current Lowest Price</th>
+                                <th>Target Price</th>
+                                <th>Alert Status</th>
+                                <th>Date Created</th>
+                                <th class="text-end pe-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alert in alerts %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="{{ alert.product.image }}" alt="{{ alert.product.name }}" style="width: 48px; height: 48px; object-fit: contain;">
+                                        <div>
+                                            <a href="{{ url_for('product_details', product_id=alert.product.id) }}" class="fw-bold text-dark text-decoration-none d-block text-truncate" style="max-width: 320px;">
+                                                {{ alert.product.name }}
+                                            </a>
+                                            <span class="badge bg-light text-muted fs-xs">{{ alert.product.brand }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-success">
+                                        ₹{{ "{:,.0f}".format(alert.product.lowest_price) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-primary">
+                                        ₹{{ "{:,.0f}".format(alert.target_price) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if alert.is_triggered %}
+                                        <span class="badge bg-success px-3 py-2 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i>PRICE DROPPED!</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill"><i class="bi bi-clock-history me-1"></i>Monitoring Price</span>
+                                    {% endif %}
+                                </td>
+                                <td class="fs-sm text-muted">
+                                    {{ alert.created_at.strftime('%b %d, %Y') }}
+                                </td>
+                                <td class="text-end pe-4">
+                                    <form action="{{ url_for('delete_price_alert', alert_id=alert.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                                            Delete Alert
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm rounded-4 text-center py-5">
+            <div class="card-body">
+                <i class="bi bi-bell text-muted display-3 mb-3"></i>
+                <h4 class="fw-bold">No Active Price Alerts</h4>
+                <p class="text-muted fs-sm">Click "Set Alert" on any product page to get notified when prices drop!</p>
+                <a href="{{ url_for('search') }}" class="btn btn-primary rounded-pill px-4">Browse Products</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

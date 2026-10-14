@@ -1,0 +1,485 @@
+{% extends 'base.html' %}
+
+{% block title %}Search & Compare Electronics ({{ total_count }}+ Products) | ElectroCompare{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Category Chips Carousel / Pills Filter Bar -->
+    <div class="mb-4 overflow-auto pb-2">
+        <div class="d-flex align-items-center gap-2 flex-nowrap">
+            <span class="fs-xs fw-bold text-uppercase text-muted me-1 text-nowrap"><i class="bi bi-tags-fill me-1"></i>Categories:</span>
+            <a href="{{ url_for('search', q=query, brand=selected_brand, min_price=min_price, max_price=max_price, sort=sort_by) }}"
+               class="btn btn-sm rounded-pill px-3 fw-semibold text-nowrap {% if not selected_category or selected_category == 'All' %}btn-primary{% else %}btn-outline-secondary bg-white text-dark{% endif %}">
+                All ({{ total_count }})
+            </a>
+            {% for cat in categories %}
+            <a href="{{ url_for('search', category=cat.name, q=query, brand=selected_brand, min_price=min_price, max_price=max_price, sort=sort_by) }}"
+               class="btn btn-sm rounded-pill px-3 fw-semibold text-nowrap {% if selected_category == cat.name %}btn-primary{% else %}btn-outline-secondary bg-white text-dark{% endif %}">
+                <i class="bi {{ cat.icon }} me-1"></i>{{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- PC Components Specialized Sub-Category Bar -->
+    {% if not selected_category or selected_category == 'PC Components' or selected_category == 'All' %}
+    <div class="p-3 bg-gradient-dark text-white rounded-4 shadow-sm mb-4 border border-secondary" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-cpu-fill text-warning fs-5"></i>
+                <h6 class="fw-extrabold mb-0 text-white fs-sm">PC Component Subcategory Filter:</h6>
+            </div>
+            <span class="fs-xs text-secondary">Filter specific hardware components & specs</span>
+        </div>
+        <div class="d-flex align-items-center gap-1.5 flex-wrap">
+            <a href="{{ url_for('search', category='PC Components', subcat='All', q=query, brand=selected_brand, min_price=min_price, max_price=max_price, sort=sort_by) }}"
+               class="btn btn-xs rounded-pill px-3 py-1 fw-bold text-nowrap {% if not selected_subcat or selected_subcat == 'All' %}btn-warning text-dark{% else %}btn-outline-light{% endif %}">
+                All PC Parts
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='GPU', q=query, brand=selected_brand, min_price=min_price, max_price=max_price, sort=sort_by) }}"
+               class="btn btn-xs rounded-pill px-3 py-1 fw-bold text-nowrap {% if selected_subcat == 'GPU' %}btn-primary{% else %}btn-outline-light{% endif %}">
+                🎮 GPUs / Graphics Cards
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='CPU', q=query, brand=selected_brand, min_price=min_price, max_price=max_price, sort=sort_by) }}"
+               class="btn btn-xs rounded-pill px-3 py-1 fw-bold text-nowrap {% if selected_subcat == 'CPU' %}btn-primary{% else %}btn-outline-light{% endif %}">
+                🧠 CPUs / Processors
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='SSD', q=query, brand=selected_brand, min_price=min_price, max_price=max_price, sort=sort_by) }}"
+               class="btn btn-xs rounded-pill px-3 py-1 fw-bold text-nowrap {% if selected_subcat == 'SSD' %}btn-primary{% else %}btn-outline-light{% endif %}">
+                ⚡ NVMe SSDs
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='RAM', q=query, brand=selected_brand, min_price=min_price, max_price=max_price, sort=sort_by) }}"
+               class="btn btn-xs rounded-pill px-3 py-1 fw-bold text-nowrap {% if selected_subcat == 'RAM' %}btn-primary{% else %}btn-outline-light{% endif %}">
+                📼 DDR5 RAM
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='Motherboard', q=query, brand=selected_brand, min_price=min_price, max_price=max_price, sort=sort_by) }}"
+               class="btn btn-xs rounded-pill px-3 py-1 fw-bold text-nowrap {% if selected_subcat == 'Motherboard' %}btn-primary{% else %}btn-outline-light{% endif %}">
+                🔌 Motherboards
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='Cooling', q=query, brand=selected_brand, min_price=min_price, max_price=max_price, sort=sort_by) }}"
+               class="btn btn-xs rounded-pill px-3 py-1 fw-bold text-nowrap {% if selected_subcat == 'Cooling' %}btn-primary{% else %}btn-outline-light{% endif %}">
+                ❄️ Cooling & PSUs
+            </a>
+            <a href="{{ url_for('search', category='PC Components', subcat='Monitor', q=query, brand=selected_brand, min_price=min_price, max_price=max_price, sort=sort_by) }}"
+               class="btn btn-xs rounded-pill px-3 py-1 fw-bold text-nowrap {% if selected_subcat == 'Monitor' %}btn-primary{% else %}btn-outline-light{% endif %}">
+                🖥️ Gaming Monitors
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Page Header & Active Filters Bar -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-extrabold mb-1">
+                {% if selected_category and selected_category != 'All' %}
+                    {{ selected_category }}
+                {% elif query %}
+                    Search: "{{ query }}"
+                {% else %}
+                    Explore Electronics Catalog
+                {% endif %}
+            </h1>
+            <p class="text-muted fs-sm mb-0">
+                Found <strong class="text-dark" id="totalCountDisplay">{{ total_count }}</strong> verified products across Amazon, Flipkart, Croma, Reliance & Vijay Sales
+            </p>
+        </div>
+
+        <!-- Sort By Control & View Options -->
+        <div class="d-flex align-items-center gap-2">
+            <label for="sortSelect" class="fs-sm fw-semibold text-muted text-nowrap"><i class="bi bi-sort-down me-1"></i>Sort By:</label>
+            <form id="sortForm" action="{{ url_for('search') }}" method="GET" class="mb-0">
+                <input type="hidden" name="q" value="{{ query }}">
+                <input type="hidden" name="category" value="{{ selected_category }}">
+                <input type="hidden" name="brand" value="{{ selected_brand }}">
+                <input type="hidden" name="min_price" value="{{ min_price }}">
+                <input type="hidden" name="max_price" value="{{ max_price }}">
+                <select name="sort" id="sortSelect" class="form-select form-select-sm rounded-pill px-3 shadow-xs" onchange="document.getElementById('sortForm').submit();">
+                    <option value="default" {% if sort_by == 'default' %}selected{% endif %}>Featured & Popular</option>
+                    <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Customer Rating</option>
+                    <option value="discount" {% if sort_by == 'discount' %}selected{% endif %}>Highest Discount %</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Sidebar Filters Column (Flipkart/Amazon style) -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 sticky-lg-top" style="top: 90px;">
+                <div class="card-header bg-white py-3 px-4 d-flex align-items-center justify-content-between border-bottom">
+                    <h5 class="mb-0 fw-bold fs-6"><i class="bi bi-funnel-fill me-2 text-primary"></i>Filters</h5>
+                    <a href="{{ url_for('search') }}" class="text-decoration-none fs-xs text-primary fw-bold">Reset All</a>
+                </div>
+                <div class="card-body p-4 pt-3">
+                    <form action="{{ url_for('search') }}" method="GET" id="filterSidebarForm">
+                        <input type="hidden" name="q" value="{{ query }}">
+                        <input type="hidden" name="sort" value="{{ sort_by }}">
+
+                        <!-- Category Dropdown Filter -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold fs-xs text-uppercase text-muted tracking-wider">Category</label>
+                            <select name="category" class="form-select rounded-3 fs-sm" onchange="this.form.submit()">
+                                <option value="All" {% if not selected_category or selected_category == 'All' %}selected{% endif %}>All Categories</option>
+                                {% for cat in categories %}
+                                <option value="{{ cat.name }}" {% if selected_category == cat.name %}selected{% endif %}>{{ cat.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Brand Checkboxes Filter (Amazon/Flipkart Facet Style) -->
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <label class="form-label fw-bold fs-xs text-uppercase text-muted tracking-wider mb-0">Brand</label>
+                                {% if selected_brand and selected_brand != 'All' %}
+                                    <a href="{{ url_for('search', category=selected_category, q=query, min_price=min_price, max_price=max_price, sort=sort_by) }}" class="fs-xs text-muted">Clear</a>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="border rounded-3 p-2 bg-light overflow-auto" style="max-height: 200px;">
+                                <div class="form-check py-1">
+                                    <input class="form-check-input" type="radio" name="brand" id="brand_all" value="All" 
+                                           {% if not selected_brand or selected_brand == 'All' %}checked{% endif %} onchange="this.form.submit()">
+                                    <label class="form-check-label fs-sm fw-semibold" for="brand_all">
+                                        All Brands
+                                    </label>
+                                </div>
+                                {% for b_name, b_count in brands_with_counts %}
+                                <div class="form-check py-1 d-flex align-items-center justify-content-between pe-1">
+                                    <div>
+                                        <input class="form-check-input" type="radio" name="brand" id="brand_{{ loop.index }}" value="{{ b_name }}" 
+                                               {% if selected_brand == b_name %}checked{% endif %} onchange="this.form.submit()">
+                                        <label class="form-check-label fs-sm" for="brand_{{ loop.index }}">
+                                            {{ b_name }}
+                                        </label>
+                                    </div>
+                                    <span class="badge bg-white text-muted border rounded-pill fs-xs">{{ b_count }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Price Range Filter -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold fs-xs text-uppercase text-muted tracking-wider">Price Range (₹)</label>
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <input type="number" name="min_price" class="form-control form-control-sm rounded-3" placeholder="Min ₹" value="{{ min_price }}">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" name="max_price" class="form-control form-control-sm rounded-3" placeholder="Max ₹" value="{{ max_price }}">
+                                </div>
+                            </div>
+                            <div class="d-flex gap-1 flex-wrap mt-2">
+                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill fs-xs" onclick="setPrice(0, 25000)">Under ₹25k</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill fs-xs" onclick="setPrice(25000, 75000)">₹25k - ₹75k</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill fs-xs" onclick="setPrice(75000, 150000)">₹75k - ₹1.5L</button>
+                            </div>
+                        </div>
+
+                        <!-- Apply Button -->
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold shadow-xs">
+                            <i class="bi bi-filter me-1"></i>Apply Filters
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid Column with Infinite Scroll -->
+        <div class="col-lg-9">
+            
+            <!-- Active Filter Badges -->
+            {% if selected_category and selected_category != 'All' or selected_brand and selected_brand != 'All' or min_price or max_price or query %}
+            <div class="d-flex align-items-center gap-2 flex-wrap mb-3 p-3 bg-white rounded-3 shadow-xs border">
+                <span class="fs-xs fw-bold text-muted text-uppercase">Active:</span>
+                {% if selected_category and selected_category != 'All' %}
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2 fs-xs">
+                        Category: {{ selected_category }}
+                        <a href="{{ url_for('search', brand=selected_brand, min_price=min_price, max_price=max_price, sort=sort_by, q=query) }}" class="text-primary ms-1"><i class="bi bi-x-circle-fill"></i></a>
+                    </span>
+                {% endif %}
+                {% if selected_brand and selected_brand != 'All' %}
+                    <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-3 py-2 fs-xs">
+                        Brand: {{ selected_brand }}
+                        <a href="{{ url_for('search', category=selected_category, min_price=min_price, max_price=max_price, sort=sort_by, q=query) }}" class="text-info ms-1"><i class="bi bi-x-circle-fill"></i></a>
+                    </span>
+                {% endif %}
+                {% if min_price or max_price %}
+                    <span class="badge bg-secondary-subtle text-secondary border rounded-pill px-3 py-2 fs-xs">
+                        Price: ₹{{ min_price or '0' }} - ₹{{ max_price or 'Max' }}
+                        <a href="{{ url_for('search', category=selected_category, brand=selected_brand, sort=sort_by, q=query) }}" class="text-secondary ms-1"><i class="bi bi-x-circle-fill"></i></a>
+                    </span>
+                {% endif %}
+                {% if query %}
+                    <span class="badge bg-warning-subtle text-dark border rounded-pill px-3 py-2 fs-xs">
+                        Keyword: "{{ query }}"
+                        <a href="{{ url_for('search', category=selected_category, brand=selected_brand, min_price=min_price, max_price=max_price, sort=sort_by) }}" class="text-dark ms-1"><i class="bi bi-x-circle-fill"></i></a>
+                    </span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if products %}
+                <div class="row g-4" id="productsGrid">
+                    {% for p in products %}
+                    <div class="col-md-6 col-xl-4 product-item">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden product-card position-relative bg-white">
+                            {% if p.discount_percentage and p.discount_percentage > 0 %}
+                                <span class="position-absolute top-0 start-0 m-3 badge bg-danger rounded-pill px-3 py-1 fs-xs z-1 shadow-xs">
+                                    <i class="bi bi-tag-fill me-1"></i>{{ p.discount_percentage }}% OFF
+                                </span>
+                            {% endif %}
+                            
+                            {% set sub_label = p.specs.get('Subcomponent') if p.specs is defined and p.specs.get('Subcomponent') else '' %}
+                            {% if sub_label %}
+                                <span class="position-absolute top-0 end-0 m-3 badge bg-primary text-white rounded-pill px-2.5 py-1 fs-xs z-1 shadow-xs">
+                                    {{ sub_label }}
+                                </span>
+                            {% endif %}
+                            
+                            <!-- Image Container -->
+                            <div class="position-relative text-center p-4 bg-light">
+                                <img src="{{ p.image }}" class="card-img-top" alt="{{ p.name }}" style="height: 180px; object-fit: contain;" loading="lazy">
+                            </div>
+
+                            <!-- Card Details -->
+                            <div class="card-body p-4 d-flex flex-column">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="text-muted fs-xs fw-bold text-uppercase tracking-wider">{{ p.brand }}</span>
+                                    <div class="fs-xs text-warning">
+                                        <i class="bi bi-star-fill"></i> <span class="fw-bold text-dark">{{ p.rating }}</span>
+                                        <span class="text-muted">({{ p.review_count }})</span>
+                                    </div>
+                                </div>
+
+                                <h6 class="card-title fw-bold text-truncate-2 mb-2 lh-base">
+                                    <a href="{{ url_for('product_details', product_id=p.id) }}" class="text-dark text-decoration-none hover-primary">{{ p.name }}</a>
+                                </h6>
+
+                                <!-- Hardware Specs Pills -->
+                                {% if p.specs is defined and p.specs %}
+                                    <div class="d-flex flex-wrap gap-1 mb-3">
+                                        {% for key, val in p.specs.items() %}
+                                            {% if key != 'Subcomponent' and loop.index <= 2 %}
+                                                <span class="badge bg-light text-dark border fs-xs fw-normal px-2 py-1" style="font-size: 0.72rem;">
+                                                    <strong>{{ key }}:</strong> {{ val }}
+                                                </span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                <!-- Retailer availability summary -->
+                                <div class="mb-3 fs-xs text-muted d-flex align-items-center gap-1">
+                                    <i class="bi bi-shop text-primary"></i>
+                                    <span>Available in <strong>{{ p.prices|length }}</strong> top stores</span>
+                                </div>
+
+                                <div class="mt-auto pt-3 border-top d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span class="fs-xs text-muted d-block fw-semibold">Best Price</span>
+                                        <div class="fs-5 fw-bold text-success">
+                                            ₹{{ "{:,.0f}".format(p.lowest_price) }}
+                                        </div>
+                                        {% if p.original_price and p.original_price > p.lowest_price %}
+                                            <span class="fs-xs text-muted text-decoration-line-through">₹{{ "{:,.0f}".format(p.original_price) }}</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <a href="{{ url_for('product_details', product_id=p.id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold">
+                                        Compare Stores <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Infinite Scroll / Load More Actions -->
+                <div class="text-center mt-5 mb-4" id="infiniteScrollContainer">
+                    <button class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow-sm" id="loadMoreBtn" onclick="loadMoreInfiniteProducts()">
+                        <i class="bi bi-arrow-repeat me-2" id="loadSpinner"></i>Explore More Products
+                    </button>
+                    <div class="mt-2 text-muted fs-xs" id="infiniteStatusText">
+                        Infinite electronics catalog loaded dynamically like Flipkart & Amazon
+                    </div>
+                </div>
+
+            {% else %}
+                <div class="card border-0 shadow-sm rounded-4 text-center py-5 bg-white">
+                    <div class="card-body">
+                        <i class="bi bi-search text-muted display-3 mb-3"></i>
+                        <h4 class="fw-bold">No Products Found in this Filter</h4>
+                        <p class="text-muted fs-sm">Try broadening your search query or reset filters to explore all available electronics.</p>
+                        <a href="{{ url_for('search') }}" class="btn btn-primary rounded-pill px-4 fw-bold">View All Products</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+<!-- JavaScript for Quick Price Range & Dynamic Infinite Scroll -->
+<script>
+function setPrice(minVal, maxVal) {
+    const form = document.getElementById('filterSidebarForm');
+    form.min_price.value = minVal;
+    form.max_price.value = maxVal;
+    form.submit();
+}
+
+let currentPage = 1;
+let isLoading = false;
+let hasMoreToLoad = true;
+
+async function loadMoreInfiniteProducts() {
+    if (isLoading || !hasMoreToLoad) return;
+    isLoading = true;
+    
+    const loadBtn = document.getElementById('loadMoreBtn');
+    const spinner = document.getElementById('loadSpinner');
+    const statusText = document.getElementById('infiniteStatusText');
+    
+    if (spinner) spinner.classList.add('spin-animation');
+    if (loadBtn) loadBtn.disabled = true;
+
+    currentPage++;
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', currentPage);
+    params.set('per_page', 9);
+
+    try {
+        const response = await fetch(`/api/products/paginated?${params.toString()}`);
+        const data = await response.json();
+
+        if (data.products && data.products.length > 0) {
+            const grid = document.getElementById('productsGrid');
+            data.products.forEach(p => {
+                const discountHtml = p.discount_percentage > 0 
+                    ? `<span class="position-absolute top-0 start-0 m-3 badge bg-danger rounded-pill px-3 py-1 fs-xs z-1 shadow-xs"><i class="bi bi-tag-fill me-1"></i>${p.discount_percentage}% OFF</span>`
+                    : '';
+                const origPriceHtml = p.original_price > p.lowest_price
+                    ? `<span class="fs-xs text-muted text-decoration-line-through">₹${p.original_price.toLocaleString('en-IN')}</span>`
+                    : '';
+                
+                const cardHtml = `
+                <div class="col-md-6 col-xl-4 product-item fade-in-up">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden product-card position-relative bg-white">
+                        ${discountHtml}
+                        <div class="position-relative text-center p-4 bg-light">
+                            <img src="${p.image}" class="card-img-top" alt="${p.name}" style="height: 180px; object-fit: contain;" loading="lazy">
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="text-muted fs-xs fw-bold text-uppercase tracking-wider">${p.brand}</span>
+                                <div class="fs-xs text-warning">
+                                    <i class="bi bi-star-fill"></i> <span class="fw-bold text-dark">${p.rating}</span>
+                                    <span class="text-muted">(${p.review_count})</span>
+                                </div>
+                            </div>
+                            <h6 class="card-title fw-bold text-truncate-2 mb-3 lh-base">
+                                <a href="/product/${p.id}" class="text-dark text-decoration-none hover-primary">${p.name}</a>
+                            </h6>
+                            <div class="mb-3 fs-xs text-muted d-flex align-items-center gap-1">
+                                <i class="bi bi-shop text-primary"></i>
+                                <span>Available in <strong>${p.stores ? p.stores.length : 5}</strong> top stores</span>
+                            </div>
+                            <div class="mt-auto pt-3 border-top d-flex align-items-center justify-content-between">
+                                <div>
+                                    <span class="fs-xs text-muted d-block fw-semibold">Best Price</span>
+                                    <div class="fs-5 fw-bold text-success">
+                                        ₹${Math.round(p.lowest_price).toLocaleString('en-IN')}
+                                    </div>
+                                    ${origPriceHtml}
+                                </div>
+                                <a href="/product/${p.id}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold">
+                                    Compare Stores <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                grid.insertAdjacentHTML('beforeend', cardHtml);
+            });
+
+            if (!data.has_next) {
+                // If standard pages ended, generate more procedurally on demand!
+                await generateMoreInfiniteProducts();
+            }
+        } else {
+            await generateMoreInfiniteProducts();
+        }
+    } catch (e) {
+        console.error("Error loading paginated products:", e);
+    } finally {
+        isLoading = false;
+        if (spinner) spinner.classList.remove('spin-animation');
+        if (loadBtn) loadBtn.disabled = false;
+    }
+}
+
+async function generateMoreInfiniteProducts() {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('category');
+    const statusText = document.getElementById('infiniteStatusText');
+    if (statusText) statusText.innerText = "Generating more verified electronics deals across top Indian stores...";
+    
+    try {
+        const genRes = await fetch('/api/products/infinite-generate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ category: cat, count: 9 })
+        });
+        const genData = await genRes.json();
+        if (genData.status === 'success') {
+            if (statusText) statusText.innerText = `Catalog expanded! ${genData.total_products} products now available.`;
+            // Fetch the newly added items
+            currentPage--;
+            await loadMoreInfiniteProducts();
+        }
+    } catch (err) {
+        console.error("Error procedurally generating products:", err);
+    }
+}
+
+// Optional Auto Infinite Scroll on bottom reach
+window.addEventListener('scroll', () => {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+        if (!isLoading && hasMoreToLoad) {
+            loadMoreInfiniteProducts();
+        }
+    }
+});
+</script>
+
+<style>
+.spin-animation {
+    animation: spin 1s infinite linear;
+}
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.fade-in-up {
+    animation: fadeInUp 0.4s ease forwards;
+}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}

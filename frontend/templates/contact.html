@@ -1,0 +1,591 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - YashTech Deals Support | Bhandup West, Mumbai{% endblock %}
+
+{% block content %}
+<!-- Modern High-Contrast Hero Banner -->
+<section class="hero-section-bright py-5 mb-5 position-relative border-bottom">
+    <div class="container text-center py-3">
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-4 py-2 fw-bold text-uppercase fs-xs mb-3 tracking-wider">
+            <i class="bi bi-headset me-1.5"></i>Get In Touch
+        </span>
+        <h1 class="display-4 fw-extrabold text-dark mb-3" style="letter-spacing: -1px;">We'd Love to Hear From You</h1>
+        <p class="lead text-secondary max-w-xl mx-auto fs-5 mb-0" style="max-width: 680px; line-height: 1.6;">
+            Have questions about price tracking, store partnership inquiries, or feedback? Reach out to our dedicated support team below.
+        </p>
+    </div>
+</section>
+
+<!-- Contact Form & Info Grid -->
+<div class="container mb-5">
+    <div class="row g-4 g-lg-5">
+        <!-- Contact Form Column -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white" id="contactFormCard">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div>
+                        <h3 class="fw-extrabold text-dark mb-1"><i class="bi bi-envelope-paper-fill text-primary me-2"></i>Send Us a Message</h3>
+                        <p class="text-muted fs-sm mb-0">Fill out the form and our support team will respond within 24 business hours.</p>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Thank you for contacting YashTech Deals! Our support team will get back to you shortly.');">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-dark fs-sm">Full Name</label>
+                            <input type="text" class="form-control form-control-lg rounded-3 fs-sm" placeholder="John Doe" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-dark fs-sm">Email Address</label>
+                            <input type="email" class="form-control form-control-lg rounded-3 fs-sm" placeholder="john@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark fs-sm">Subject</label>
+                        <select class="form-select form-select-lg rounded-3 fs-sm">
+                            <option selected>General Inquiry</option>
+                            <option>Price Tracking & Alerts</option>
+                            <option>Store Partnership / Retailer Listing</option>
+                            <option>Report Price Discrepancy</option>
+                            <option>Technical Support</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-dark fs-sm">Your Message</label>
+                        <textarea class="form-control rounded-3 fs-sm" rows="5" placeholder="How can we help you today? Describe your request in detail..." required></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3">
+                        <i class="bi bi-send-fill me-2"></i>Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Contact Information Column (Sleek Professional Sidebar) -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fs-xs fw-bold">
+                            <i class="bi bi-circle-fill me-1 fs-xs" style="font-size: 8px;"></i>Support Desk Active
+                        </span>
+                    </div>
+
+                    <h4 class="fw-extrabold text-dark mb-4">Contact Information</h4>
+
+                    <!-- Phone & Support Block -->
+                    <div class="d-flex align-items-start gap-3 mb-4 pb-3 border-bottom">
+                        <div class="p-3 bg-success-subtle text-success rounded-3 flex-shrink-0">
+                            <i class="bi bi-telephone-fill fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">Direct Support</h6>
+                            <p class="text-secondary fs-sm mb-1">Toll Free: <strong>1800-425-YASHTECH</strong></p>
+                            <p class="text-secondary fs-sm mb-0">Email: <strong>support@yashtechdeals.com</strong></p>
+                        </div>
+                    </div>
+
+                    <!-- Business Hours Block -->
+                    <div class="d-flex align-items-start gap-3 mb-4">
+                        <div class="p-3 bg-warning-subtle text-warning rounded-3 flex-shrink-0">
+                            <i class="bi bi-clock-fill fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">Operating Hours</h6>
+                            <p class="text-secondary fs-sm mb-1">Mon – Sat: 9:00 AM – 7:00 PM IST</p>
+                            <p class="text-muted fs-xs mb-0"><i class="bi bi-arrow-repeat me-1 text-primary"></i>Automated Scraper: 24/7 Active</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live System Status Footer Box -->
+                <div class="p-3.5 bg-light rounded-3 border mt-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-shield-check text-primary fs-5"></i>
+                            <div>
+                                <div class="fw-bold fs-xs text-dark">Average Response Time</div>
+                                <div class="text-muted fs-xs">&lt; 4 Hours during business hours</div>
+                            </div>
+                        </div>
+                        <span class="badge bg-primary rounded-pill fs-xs">Fast Support</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive FAQ Section -->
+<div class="container mb-5 pb-3">
+    <div class="faq-card-modern p-4 p-md-5">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1.5 text-uppercase fs-xs fw-bold tracking-wider mb-2 d-inline-flex align-items-center gap-1">
+                <i class="bi bi-patch-question-fill text-primary"></i> RIGRATE HELP CENTER
+            </span>
+            <h2 class="fw-extrabold text-dark mb-2" style="letter-spacing: -0.5px;">Frequently Asked Questions</h2>
+            <p class="text-secondary fs-sm max-w-600 mx-auto mb-3">
+                Everything you need to know about comparing prices, verified deals, live retailer sync, and shopping smart with RigRate.
+            </p>
+
+            <!-- Interactive Live Search Bar -->
+            <div class="faq-search-box mt-3 mb-4">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" id="faqSearchInput" class="form-control" placeholder="Search questions or keywords (e.g., sync, free, AI, retailers)..." autocomplete="off">
+                <button type="button" id="faqClearSearch" class="clear-search-btn d-none" title="Clear search">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <!-- Interactive Category Filter Pills -->
+            <div class="d-flex flex-wrap justify-content-center gap-2 mb-3" id="faqFilterPills">
+                <button type="button" class="faq-filter-pill active" data-category="all">
+                    <i class="bi bi-grid-fill"></i> All <span class="badge bg-white text-primary rounded-pill ms-1" id="faqCountAll">6</span>
+                </button>
+                <button type="button" class="faq-filter-pill" data-category="sync">
+                    <i class="bi bi-arrow-repeat"></i> Live Sync
+                </button>
+                <button type="button" class="faq-filter-pill" data-category="pricing">
+                    <i class="bi bi-shield-check"></i> 100% Free
+                </button>
+                <button type="button" class="faq-filter-pill" data-category="buying">
+                    <i class="bi bi-cart-check-fill"></i> Buying Deals
+                </button>
+                <button type="button" class="faq-filter-pill" data-category="ai">
+                    <i class="bi bi-robot"></i> RigRate AI
+                </button>
+                <button type="button" class="faq-filter-pill" data-category="wishlist">
+                    <i class="bi bi-heart-fill"></i> Wishlist
+                </button>
+                <button type="button" class="faq-filter-pill" data-category="stores">
+                    <i class="bi bi-shop-window"></i> Retailers
+                </button>
+            </div>
+
+            <!-- Expand / Collapse All Controls -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2 border-top border-light-subtle">
+                <span class="fs-xs text-muted fw-medium" id="faqResultsCount">Showing all 6 questions</span>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-light border rounded-pill fs-xs px-2.5 py-1 text-secondary" id="faqExpandAllBtn">
+                        <i class="bi bi-arrows-expand me-1"></i> Expand All
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light border rounded-pill fs-xs px-2.5 py-1 text-secondary" id="faqCollapseAllBtn">
+                        <i class="bi bi-arrows-collapse me-1"></i> Collapse All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accordion Items -->
+        <div class="accordion accordion-flush" id="faqAccordion">
+
+            <!-- Item 1: Live Price Tracking -->
+            <div class="accordion-item faq-item-modern" data-category="sync" data-keywords="update sync scraper scheduler timing automated price tracking real-time amazon flipkart">
+                <h2 class="accordion-header" id="faqHeadingOne">
+                    <button class="accordion-button faq-btn-modern d-flex align-items-center gap-3" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseOne" aria-expanded="true" aria-controls="faqCollapseOne">
+                        <div class="faq-icon-box" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #2563eb;">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </div>
+                        <div class="flex-grow-1 text-start">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="fw-bold text-dark fs-6 faq-question-text">How often are product prices and deals updated?</span>
+                                <span class="badge bg-primary-subtle text-primary fs-2xs rounded-pill">LIVE SYNC</span>
+                            </div>
+                        </div>
+                    </button>
+                </h2>
+                <div id="faqCollapseOne" class="accordion-collapse collapse show" aria-labelledby="faqHeadingOne" data-bs-parent="#faqAccordion">
+                    <div class="faq-body-content">
+                        <p class="mb-2">
+                            RigRate runs automated price-tracking background workers every 3 hours across major retailers including Amazon India, Flipkart, Croma, Reliance Digital, and Vijay Sales.
+                        </p>
+                        <p class="mb-3">
+                            When viewing any product details page, you can also hit the <strong class="text-dark">"Sync Real-Time Price"</strong> button to instantly pull and verify the absolute latest store prices on demand.
+                        </p>
+                        <!-- Helpful Feedback Bar -->
+                        <div class="faq-helpful-bar">
+                            <span class="faq-feedback-prompt">Was this helpful?</span>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="faq-feedback-btn" onclick="handleFaqFeedback(this, true)">
+                                    <i class="bi bi-hand-thumbs-up"></i> Yes
+                                </button>
+                                <button type="button" class="faq-feedback-btn" onclick="handleFaqFeedback(this, false)">
+                                    <i class="bi bi-hand-thumbs-down"></i> No
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 2: Free Platform -->
+            <div class="accordion-item faq-item-modern" data-category="pricing" data-keywords="free cost price subscription charge money pay hidden fees registration">
+                <h2 class="accordion-header" id="faqHeadingTwo">
+                    <button class="accordion-button collapsed faq-btn-modern d-flex align-items-center gap-3" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseTwo" aria-expanded="false" aria-controls="faqCollapseTwo">
+                        <div class="faq-icon-box" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); color: #059669;">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div class="flex-grow-1 text-start">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="fw-bold text-dark fs-6 faq-question-text">Is RigRate completely free to use?</span>
+                                <span class="badge bg-success-subtle text-success fs-2xs rounded-pill">100% FREE</span>
+                            </div>
+                        </div>
+                    </button>
+                </h2>
+                <div id="faqCollapseTwo" class="accordion-collapse collapse" aria-labelledby="faqHeadingTwo" data-bs-parent="#faqAccordion">
+                    <div class="faq-body-content">
+                        <p class="mb-2">
+                            Yes, RigRate is 100% free for all users with zero subscriptions, hidden fees, or commissions.
+                        </p>
+                        <p class="mb-3">
+                            You can search thousands of gadgets, compare prices across verified Indian stores, save unlimited items to your Wishlist, and chat with our AI Shopping Assistant without paying a single rupee.
+                        </p>
+                        <!-- Helpful Feedback Bar -->
+                        <div class="faq-helpful-bar">
+                            <span class="faq-feedback-prompt">Was this helpful?</span>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="faq-feedback-btn" onclick="handleFaqFeedback(this, true)">
+                                    <i class="bi bi-hand-thumbs-up"></i> Yes
+                                </button>
+                                <button type="button" class="faq-feedback-btn" onclick="handleFaqFeedback(this, false)">
+                                    <i class="bi bi-hand-thumbs-down"></i> No
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 3: Buying at Lowest Price -->
+            <div class="accordion-item faq-item-modern" data-category="buying" data-keywords="buy purchase order checkout deal discount google shopping visit store lowest price">
+                <h2 class="accordion-header" id="faqHeadingThree">
+                    <button class="accordion-button collapsed faq-btn-modern d-flex align-items-center gap-3" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseThree" aria-expanded="false" aria-controls="faqCollapseThree">
+                        <div class="faq-icon-box" style="background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); color: #4f46e5;">
+                            <i class="bi bi-cart-check-fill"></i>
+                        </div>
+                        <div class="flex-grow-1 text-start">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="fw-bold text-dark fs-6 faq-question-text">How do I purchase the item with the best price?</span>
+                                <span class="badge bg-indigo-subtle text-primary fs-2xs rounded-pill">PURCHASING</span>
+                            </div>
+                        </div>
+                    </button>
+                </h2>
+                <div id="faqCollapseThree" class="accordion-collapse collapse" aria-labelledby="faqHeadingThree" data-bs-parent="#faqAccordion">
+                    <div class="faq-body-content">
+                        <p class="mb-2">
+                            When you view any product on RigRate, all verified retailer prices are organized clearly from lowest to highest.
+                        </p>
+                        <p class="mb-3">
+                            Click <strong class="text-dark">"Visit Store"</strong> next to any deal or click the <strong class="text-dark">"Google Shopping Live"</strong> button. RigRate redirects you directly to the official retailer's checkout page for a safe, direct transaction.
+                        </p>
+                        <!-- Helpful Feedback Bar -->
+                        <div class="faq-helpful-bar">
+                            <span class="faq-feedback-prompt">Was this helpful?</span>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="faq-feedback-btn" onclick="handleFaqFeedback(this, true)">
+                                    <i class="bi bi-hand-thumbs-up"></i> Yes
+                                </button>
+                                <button type="button" class="faq-feedback-btn" onclick="handleFaqFeedback(this, false)">
+                                    <i class="bi bi-hand-thumbs-down"></i> No
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 4: RigRate AI (Powered by Yash) -->
+            <div class="accordion-item faq-item-modern" data-category="ai" data-keywords="ai assistant yash bot recommendations budget specs co-pilot question chat help">
+                <h2 class="accordion-header" id="faqHeadingFour">
+                    <button class="accordion-button collapsed faq-btn-modern d-flex align-items-center gap-3" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseFour" aria-expanded="false" aria-controls="faqCollapseFour">
+                        <div class="faq-icon-box" style="background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); color: #7c3aed;">
+                            <i class="bi bi-robot"></i>
+                        </div>
+                        <div class="flex-grow-1 text-start">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="fw-bold text-dark fs-6 faq-question-text">What can RigRate AI (Powered by Yash) help me with?</span>
+                                <span class="badge bg-purple-subtle text-purple fs-2xs rounded-pill">SMART AI</span>
+                            </div>
+                        </div>
+                    </button>
+                </h2>
+                <div id="faqCollapseFour" class="accordion-collapse collapse" aria-labelledby="faqHeadingFour" data-bs-parent="#faqAccordion">
+                    <div class="faq-body-content">
+                        <p class="mb-2">
+                            <strong class="text-dark">RigRate AI (Powered by Yash)</strong> is your dedicated 24/7 electronics shopping co-pilot.
+                        </p>
+                        <p class="mb-3">
+                            Click the floating AI bubble in the bottom right corner anytime to ask for budget picks (e.g. <em>"Best gaming laptop under ₹70,000"</em>), compare smartphone cameras, find highest discount bargains, or get step-by-step guidance on using RigRate.
+                        </p>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fs-xs fw-semibold" onclick="if(window.rigrateAi){window.rigrateAi.openChat();}">
+                                <i class="bi bi-chat-dots-fill me-1"></i> Try RigRate AI Now
+                            </button>
+                        </div>
+                        <!-- Helpful Feedback Bar -->
+                        <div class="faq-helpful-bar">
+                            <span class="faq-feedback-prompt">Was this helpful?</span>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="faq-feedback-btn" onclick="handleFaqFeedback(this, true)">
+                                    <i class="bi bi-hand-thumbs-up"></i> Yes
+                                </button>
+                                <button type="button" class="faq-feedback-btn" onclick="handleFaqFeedback(this, false)">
+                                    <i class="bi bi-hand-thumbs-down"></i> No
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 5: Wishlist -->
+            <div class="accordion-item faq-item-modern" data-category="wishlist" data-keywords="wishlist save bookmark heart favorites tracking price drop alerts">
+                <h2 class="accordion-header" id="faqHeadingFive">
+                    <button class="accordion-button collapsed faq-btn-modern d-flex align-items-center gap-3" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseFive" aria-expanded="false" aria-controls="faqCollapseFive">
+                        <div class="faq-icon-box" style="background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); color: #e11d48;">
+                            <i class="bi bi-heart-fill"></i>
+                        </div>
+                        <div class="flex-grow-1 text-start">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="fw-bold text-dark fs-6 faq-question-text">How does the Wishlist and saved items feature work?</span>
+                                <span class="badge bg-danger-subtle text-danger fs-2xs rounded-pill">WISHLIST</span>
+                            </div>
+                        </div>
+                    </button>
+                </h2>
+                <div id="faqCollapseFive" class="accordion-collapse collapse" aria-labelledby="faqHeadingFive" data-bs-parent="#faqAccordion">
+                    <div class="faq-body-content">
+                        <p class="mb-2">
+                            Click the heart icon on any product card or details page to bookmark it directly into your Wishlist.
+                        </p>
+                        <p class="mb-3">
+                            You can access your Wishlist anytime from the navigation bar to see real-time price trends, compare stores for your pinned gadgets, and remove or buy items whenever you're ready.
+                        </p>
+                        <div class="mb-3">
+                            <a href="{{ url_for('wishlist') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fs-xs fw-semibold">
+                                <i class="bi bi-heart-fill me-1"></i> Go to My Wishlist
+                            </a>
+                        </div>
+                        <!-- Helpful Feedback Bar -->
+                        <div class="faq-helpful-bar">
+                            <span class="faq-feedback-prompt">Was this helpful?</span>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="faq-feedback-btn" onclick="handleFaqFeedback(this, true)">
+                                    <i class="bi bi-hand-thumbs-up"></i> Yes
+                                </button>
+                                <button type="button" class="faq-feedback-btn" onclick="handleFaqFeedback(this, false)">
+                                    <i class="bi bi-hand-thumbs-down"></i> No
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 6: Retailers Compared -->
+            <div class="accordion-item faq-item-modern" data-category="stores" data-keywords="stores retailers amazon flipkart croma reliance digital vijay sales merchants google shopping">
+                <h2 class="accordion-header" id="faqHeadingSix">
+                    <button class="accordion-button collapsed faq-btn-modern d-flex align-items-center gap-3" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseSix" aria-expanded="false" aria-controls="faqCollapseSix">
+                        <div class="faq-icon-box" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); color: #d97706;">
+                            <i class="bi bi-shop-window"></i>
+                        </div>
+                        <div class="flex-grow-1 text-start">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <span class="fw-bold text-dark fs-6 faq-question-text">Which stores and retailers are compared on RigRate?</span>
+                                <span class="badge bg-warning-subtle text-warning-emphasis fs-2xs rounded-pill">RETAILERS</span>
+                            </div>
+                        </div>
+                    </button>
+                </h2>
+                <div id="faqCollapseSix" class="accordion-collapse collapse" aria-labelledby="faqHeadingSix" data-bs-parent="#faqAccordion">
+                    <div class="faq-body-content">
+                        <p class="mb-2">
+                            RigRate indexes verified Indian electronics retailers: <strong class="text-dark">Amazon India, Flipkart, Croma, Reliance Digital, and Vijay Sales</strong>.
+                        </p>
+                        <p class="mb-3">
+                            We also generate real-time Google Shopping India lookup queries so you can inspect regional stores and seasonal sales with a single tap.
+                        </p>
+                        <!-- Helpful Feedback Bar -->
+                        <div class="faq-helpful-bar">
+                            <span class="faq-feedback-prompt">Was this helpful?</span>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="faq-feedback-btn" onclick="handleFaqFeedback(this, true)">
+                                    <i class="bi bi-hand-thumbs-up"></i> Yes
+                                </button>
+                                <button type="button" class="faq-feedback-btn" onclick="handleFaqFeedback(this, false)">
+                                    <i class="bi bi-hand-thumbs-down"></i> No
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Empty Search State (hidden by default) -->
+        <div id="faqEmptyState" class="text-center py-5 d-none">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center text-muted mb-3" style="width: 60px; height: 60px; background: #f1f5f9;">
+                <i class="bi bi-search fs-3"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-1">No matching FAQ found</h5>
+            <p class="text-secondary fs-sm mb-3">We couldn't find an answer matching your query. Ask RigRate AI instead!</p>
+            <button type="button" class="btn btn-primary rounded-pill px-3 py-2 fs-sm fw-semibold shadow-sm" id="faqAskAiEmptyBtn">
+                <i class="bi bi-robot me-1"></i> Ask RigRate AI this question
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive FAQ Controller Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var searchInput = document.getElementById('faqSearchInput');
+    var clearBtn = document.getElementById('faqClearSearch');
+    var filterPills = document.querySelectorAll('.faq-filter-pill');
+    var faqItems = document.querySelectorAll('.faq-item-modern');
+    var emptyState = document.getElementById('faqEmptyState');
+    var countDisplay = document.getElementById('faqResultsCount');
+    var expandAllBtn = document.getElementById('faqExpandAllBtn');
+    var collapseAllBtn = document.getElementById('faqCollapseAllBtn');
+    var askAiEmptyBtn = document.getElementById('faqAskAiEmptyBtn');
+
+    var currentCategory = 'all';
+
+    function filterFaqs() {
+        var query = (searchInput.value || '').trim().toLowerCase();
+        var visibleCount = 0;
+
+        if (query.length > 0) {
+            clearBtn.classList.remove('d-none');
+        } else {
+            clearBtn.classList.add('d-none');
+        }
+
+        faqItems.forEach(function (item) {
+            var itemCategory = item.getAttribute('data-category') || '';
+            var itemKeywords = (item.getAttribute('data-keywords') || '').toLowerCase();
+            var itemText = item.innerText.toLowerCase();
+
+            var matchesCategory = (currentCategory === 'all' || itemCategory === currentCategory);
+            var matchesQuery = (query === '' || itemText.includes(query) || itemKeywords.includes(query));
+
+            if (matchesCategory && matchesQuery) {
+                item.classList.remove('d-none');
+                visibleCount++;
+                // If user searched, auto-expand the match so they can read it immediately
+                if (query.length > 1) {
+                    var collapseEl = item.querySelector('.accordion-collapse');
+                    if (collapseEl && !collapseEl.classList.contains('show')) {
+                        var bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+                        bsCollapse.show();
+                    }
+                }
+            } else {
+                item.classList.add('d-none');
+            }
+        });
+
+        // Update count text
+        if (countDisplay) {
+            if (visibleCount === faqItems.length) {
+                countDisplay.textContent = 'Showing all ' + visibleCount + ' questions';
+            } else {
+                countDisplay.textContent = 'Showing ' + visibleCount + ' of ' + faqItems.length + ' questions';
+            }
+        }
+
+        // Handle empty state
+        if (visibleCount === 0) {
+            emptyState.classList.remove('d-none');
+        } else {
+            emptyState.classList.add('d-none');
+        }
+    }
+
+    // Category pills click
+    filterPills.forEach(function (pill) {
+        pill.addEventListener('click', function () {
+            filterPills.forEach(function (p) { p.classList.remove('active'); });
+            this.classList.add('active');
+            currentCategory = this.getAttribute('data-category') || 'all';
+            filterFaqs();
+        });
+    });
+
+    // Search input
+    searchInput.addEventListener('input', filterFaqs);
+
+    // Clear search
+    clearBtn.addEventListener('click', function () {
+        searchInput.value = '';
+        searchInput.focus();
+        filterFaqs();
+    });
+
+    // Expand All
+    if (expandAllBtn) {
+        expandAllBtn.addEventListener('click', function () {
+            faqItems.forEach(function (item) {
+                if (!item.classList.contains('d-none')) {
+                    var collapseEl = item.querySelector('.accordion-collapse');
+                    if (collapseEl) {
+                        bootstrap.Collapse.getOrCreateInstance(collapseEl).show();
+                    }
+                }
+            });
+        });
+    }
+
+    // Collapse All
+    if (collapseAllBtn) {
+        collapseAllBtn.addEventListener('click', function () {
+            faqItems.forEach(function (item) {
+                var collapseEl = item.querySelector('.accordion-collapse');
+                if (collapseEl) {
+                    bootstrap.Collapse.getOrCreateInstance(collapseEl).hide();
+                }
+            });
+        });
+    }
+
+    // Ask AI empty button
+    if (askAiEmptyBtn) {
+        askAiEmptyBtn.addEventListener('click', function () {
+            var q = searchInput.value.trim();
+            if (window.rigrateAi) {
+                window.rigrateAi.openChat();
+                if (q) {
+                    var inputEl = document.getElementById('rigrateAiChatInput');
+                    if (inputEl) {
+                        inputEl.value = q;
+                        inputEl.focus();
+                    }
+                }
+            }
+        });
+    }
+});
+
+// Helpful feedback buttons
+function handleFaqFeedback(btn, isHelpful) {
+    var parentBar = btn.closest('.faq-helpful-bar');
+    if (!parentBar) return;
+    
+    if (isHelpful) {
+        parentBar.innerHTML = '<span class="text-success fw-bold fs-xs"><i class="bi bi-check-circle-fill me-1"></i> Thank you! Glad this helped.</span>';
+    } else {
+        parentBar.innerHTML = '<span class="text-muted fs-xs">Thanks for letting us know! <a href="javascript:void(0)" onclick="if(window.rigrateAi){window.rigrateAi.openChat();}" class="text-primary fw-semibold">Ask RigRate AI</a> for more details.</span>';
+    }
+}
+</script>
+
+{% endblock %}

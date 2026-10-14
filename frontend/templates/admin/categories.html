@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Categories | Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1"><i class="bi bi-grid-fill text-success me-2"></i>Category Management</h1>
+            <p class="text-muted fs-sm mb-0">Electronics categories supported by ElectroCompare</p>
+        </div>
+
+        <button class="btn btn-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+            <i class="bi bi-plus-lg me-1"></i>Add Category
+        </button>
+    </div>
+
+    <!-- Category Grid -->
+    <div class="row g-4">
+        {% for cat in categories %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-success-subtle text-success p-3 rounded-circle fs-3">
+                        <i class="bi {{ cat.icon }}"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0">{{ cat.name }}</h5>
+                        <small class="text-muted">{{ cat.products|length }} Registered Products</small>
+                    </div>
+                </div>
+                <p class="text-muted fs-sm mb-3">{{ cat.description or 'Category for electronics price tracking.' }}</p>
+                <div class="mt-auto border-top pt-3 d-flex justify-content-between align-items-center">
+                    <span class="badge bg-light text-dark font-monospace fs-xs">Slug: {{ cat.slug }}</span>
+                    <form action="{{ url_for('admin_delete_category', category_id=cat.id) }}" method="POST" onsubmit="return confirm('Delete this category?');">
+                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle p-2">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-success text-white rounded-top-4">
+                <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle me-2"></i>Add Electronics Category</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('admin_add_category') }}" method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Category Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Gaming Consoles" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Bootstrap Icon Class</label>
+                        <input type="text" name="icon" class="form-control" placeholder="e.g. bi-controller" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Description</label>
+                        <textarea name="description" class="form-control" rows="2" placeholder="Brief category description..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold">Save Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

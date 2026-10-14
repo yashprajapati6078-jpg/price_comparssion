@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <radialGradient id="rubySphere" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#fecdd3"/>
+      <stop offset="35%" stop-color="#f43f5e"/>
+      <stop offset="85%" stop-color="#be123c"/>
+      <stop offset="100%" stop-color="#881337"/>
+    </radialGradient>
+    <linearGradient id="envelopeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#ffe4e6"/>
+    </linearGradient>
+    <filter id="shadowContact" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="5" flood-color="#881337" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- 3D Drop Shadow -->
+  <ellipse cx="50" cy="88" rx="30" ry="6" fill="#000000" opacity="0.2" filter="blur(4px)"/>
+
+  <!-- 3D Main Sphere -->
+  <circle cx="50" cy="48" r="38" fill="url(#rubySphere)" filter="url(#shadowContact)"/>
+
+  <!-- Gloss Highlight -->
+  <path d="M 20,34 A 34,34 0 0,1 80,34 A 34,18 0 0,0 20,34 Z" fill="#ffffff" opacity="0.4"/>
+
+  <!-- 3D Envelope -->
+  <rect x="25" y="32" width="50" height="34" rx="6" fill="url(#envelopeGrad)" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.35))"/>
+  <path d="M 26,34 L 50,52 L 74,34" stroke="#e11d48" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
