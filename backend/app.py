@@ -333,14 +333,32 @@ def redirect_google_shopping(product_id):
 
 @app.route('/redirect/store/<int:price_id>', endpoint='redirect_to_store')
 @app.route('/redirect/buy/<int:price_id>', endpoint='redirect_buy')
-def redirect_to_store(price_id):
+@app.route('/redirect_outbound/<int:price_id>', endpoint='redirect_outbound_id')
+@app.route('/redirect_outbound', endpoint='redirect_outbound')
+@app.route('/redirect/outbound', endpoint='redirect_outbound_alt')
+def redirect_to_store(price_id=None):
     """
-    Buyhatke-style intermediate transition controller.
+    Buyhatke-style direct affiliate & store controller.
     Resolves and forwards the user directly to the exact product page (Flipkart /p/<pid>, Amazon /dp/<ASIN>, Croma /p/<sku>, etc.).
     Logs exact debugging information as required.
     """
-    price_obj = db.session.get(Price, price_id)
+    if price_id is None:
+        p_arg = request.args.get('price_id') or request.args.get('id')
+        if p_arg and str(p_arg).isdigit():
+            price_id = int(p_arg)
+        elif request.args.get('url'):
+            dest_url = request.args.get('url')
+            return redirect(dest_url, code=302)
+        elif request.args.get('product_id'):
+            prod = db.session.get(Product, int(request.args.get('product_id')))
+            if prod and prod.prices:
+                price_id = sorted(prod.prices, key=lambda x: x.price)[0].id
+
+    price_obj = db.session.get(Price, price_id) if price_id else None
     if not price_obj:
+        dest_url = request.args.get('url') or request.args.get('dest') or request.args.get('target_url')
+        if dest_url and dest_url.startswith('http'):
+            return redirect(dest_url, code=302)
         flash("Deal link not found.", "warning")
         return redirect(url_for('home'))
 

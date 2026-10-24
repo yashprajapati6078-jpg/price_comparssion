@@ -209,8 +209,16 @@ def build_affiliate_url(target_url: str, retailer_slug: str = "amazon", product_
     Guarantees clean, direct, error-free redirection with merchant affiliate parameters.
     If UNIVERSAL_AFFILIATE_PREFIX is set, wraps non-Amazon links through the universal network (CueLinks).
     """
-    # Direct pass-through for pre-generated affiliate/profit links (EarnKaro, CueLinks, etc.)
-    if target_url and any(dom in target_url.lower() for dom in ["linksredirect.com", "linkredirect.in", "fktr.in", "ekaro.in"]):
+    # If target_url is wrapped with linksredirect, unwrap the clean destination
+    if target_url and "linksredirect.com" in target_url.lower():
+        m = re.search(r"[?&]url=([^&]+)", target_url)
+        if m:
+            target_url = urllib.parse.unquote(m.group(1))
+        else:
+            target_url = ""
+
+    # Direct pass-through for verified affiliate links (EarnKaro, etc.)
+    if target_url and any(dom in target_url.lower() for dom in ["linkredirect.in", "fktr.in", "ekaro.in"]):
         return target_url
 
     r_slug = (retailer_slug or "amazon").lower().strip()

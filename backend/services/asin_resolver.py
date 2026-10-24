@@ -84,13 +84,13 @@ CANONICAL_PRODUCT_URLS = {
 
     # Smartphones
     "apple iphone 15 pro max 256gb": {
-        "amazon": "https://www.amazon.in/dp/B0CHX1W1XY",
+        "amazon": "https://www.amazon.in/s?k=Apple+iPhone+15+Pro+Max+256GB",
         "flipkart": "https://www.flipkart.com/apple-iphone-15-pro-max-natural-titanium-256-gb/p/itm21c4323e7498c",
         "croma": "https://www.croma.com/apple-iphone-15-pro-max-256gb-natural-titanium-/p/300819",
         "vijaysales": "https://www.vijaysales.com/search?q=Apple+iPhone+15+Pro+Max+256GB"
     },
     "apple iphone 15 pro max": {
-        "amazon": "https://www.amazon.in/dp/B0CHX1W1XY",
+        "amazon": "https://www.amazon.in/s?k=Apple+iPhone+15+Pro+Max",
         "flipkart": "https://www.flipkart.com/apple-iphone-15-pro-max-natural-titanium-256-gb/p/itm21c4323e7498c",
         "croma": "https://www.croma.com/apple-iphone-15-pro-max-256gb-natural-titanium-/p/300819",
         "vijaysales": "https://www.vijaysales.com/search?q=Apple+iPhone+15+Pro+Max+256GB"

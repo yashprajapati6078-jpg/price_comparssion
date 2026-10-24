@@ -76,7 +76,7 @@
                             <!-- Prominent Buy Now at Lowest Price Button -->
                             {% if product.prices %}
                                 {% set lowest_store = (product.prices | sort(attribute='price'))[0] %}
-                                <a href="{{ url_for('redirect_to_store', price_id=lowest_store.id) }}" target="_blank" rel="noopener noreferrer" class="btn btn-success fw-bold rounded-pill px-3.5 py-2 shadow-sm d-inline-flex align-items-center gap-1.5" title="Buy at {{ lowest_store.retailer.name if lowest_store.retailer else 'Store' }}">
+                                <a href="{{ lowest_store.direct_buy_url or url_for('redirect_to_store', price_id=lowest_store.id) }}" target="_blank" rel="noopener noreferrer" class="btn btn-success fw-bold rounded-pill px-3.5 py-2 shadow-sm d-inline-flex align-items-center gap-1.5" title="Buy at {{ lowest_store.retailer.name if lowest_store.retailer else 'Store' }}">
                                     <i class="bi bi-cart-check-fill"></i>
                                     <span>Buy Now</span>
                                     <i class="bi bi-box-arrow-up-right fs-xs"></i>
@@ -237,7 +237,7 @@
                                     </div>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <a href="{{ url_for('redirect_to_store', price_id=store.id) }}" target="_blank" rel="noopener noreferrer" class="btn {% if store.is_lowest %}btn-success{% else %}btn-outline-primary{% endif %} btn-sm rounded-pill px-3 shadow-xs">
+                                    <a href="{{ store.direct_buy_url or url_for('redirect_to_store', price_id=store.id) }}" target="_blank" rel="noopener noreferrer" class="btn {% if store.is_lowest %}btn-success{% else %}btn-outline-primary{% endif %} btn-sm rounded-pill px-3 shadow-xs">
                                         Buy Now <i class="bi bi-box-arrow-up-right ms-1"></i>
                                     </a>
                                 </td>
