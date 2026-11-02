@@ -83,13 +83,6 @@ def inject_globals():
 
 def seed_database():
     with app.app_context():
-        try:
-            # If database is already seeded, skip all initialization queries
-            if Product.query.first() is not None and Retailer.query.first() is not None:
-                return
-        except Exception:
-            pass
-
         db.create_all()
 
         # 1. Categories
@@ -152,18 +145,17 @@ def seed_database():
             db.session.add(demo_user)
             db.session.commit()
 
-        # 4. Insert Curated Products if catalog is empty
-        current_count = Product.query.count()
-        if current_count < 120:
-            from catalog_data import CURATED_PRODUCTS
-            inserted = PriceScraperEngine.insert_products_batch(CURATED_PRODUCTS, db.session)
-            if inserted > 0:
-                print(f"Inserted {inserted} new curated products.")
+        # 4. Comprehensive Catalog Expansion Check
+        try:
+            tab_count = Product.query.filter(Product.category.has(Category.name == 'Tablets')).count()
             current_count = Product.query.count()
-            if current_count < 120:
-                extra_needed = 120 - current_count
-                print(f"Expanding catalog with {extra_needed} products...")
-                PriceScraperEngine.generate_and_insert_infinite_products(count=extra_needed, db_session=db.session)
+            if tab_count < 10 or current_count < 220:
+                print("Catalog expansion trigger: Populating 300+ authentic products across all categories...")
+                from populate_massive_catalog import run_expansion
+                run_expansion()
+                current_count = Product.query.count()
+        except Exception as e:
+            print(f"Catalog expansion notice: {e}")
 
         print(f"Database ready with {current_count} total products across all categories.")
 
@@ -205,6 +197,22 @@ def home():
                            pc_spotlight_products=pc_spotlight_products,
                            popular_brands=popular_brands)
 
+@app.route('/api/seed-massive-catalog')
+def seed_massive_catalog_endpoint():
+    try:
+        from populate_massive_catalog import run_expansion
+        run_expansion()
+        counts = {}
+        for c in Category.query.all():
+            counts[c.name] = Product.query.filter_by(category_id=c.id).count()
+        return jsonify({
+            "success": True, 
+            "total_products": Product.query.count(),
+            "category_distribution": counts
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 @app.route('/search')
 def search():
     query = request.args.get('q', '').strip()
@@ -221,8 +229,10 @@ def search():
     if query:
         matched = PriceScraperEngine.fuzzy_search_products(query, products)
         if (not matched or len(matched) < 2) and len(query) >= 2:
-            from catalog_data import synthesize_products_for_query
-            new_items = synthesize_products_for_query(query=query, category_name=category_name, brand_name=brand_name, count=4)
+            from catalog_data import synthesize_products_for_query, detect_category_from_query
+            detected_cat = detect_category_from_query(query)
+            active_cat = detected_cat if detected_cat else (category_name if category_name and category_name != 'All' else None)
+            new_items = synthesize_products_for_query(query=query, category_name=active_cat, brand_name=brand_name, count=5)
             PriceScraperEngine.insert_products_batch(new_items, db.session)
             products = Product.query.all()
             products = PriceScraperEngine.fuzzy_search_products(query, products)
@@ -230,7 +240,9 @@ def search():
             products = matched
 
     if category_name and category_name != 'All':
-        products = [p for p in products if p.category and p.category.name.lower() == category_name.lower()]
+        cat_filtered = [p for p in products if p.category and p.category.name.lower() == category_name.lower()]
+        if cat_filtered or not query:
+            products = cat_filtered
 
     if subcat and subcat != 'All':
         from catalog_data import detect_subcomponent_from_query
@@ -239,10 +251,13 @@ def search():
             p_sub = p.specs.get("Subcomponent") or detect_subcomponent_from_query(p.name, p.name)
             if p_sub.lower() == subcat.lower() or subcat.lower() in p.name.lower():
                 filtered_sub.append(p)
-        products = filtered_sub
+        if filtered_sub or not query:
+            products = filtered_sub
 
     if brand_name and brand_name != 'All':
-        products = [p for p in products if p.brand.lower() == brand_name.lower()]
+        brand_filtered = [p for p in products if p.brand.lower() == brand_name.lower()]
+        if brand_filtered or not query:
+            products = brand_filtered
 
     if min_p is not None:
         products = [p for p in products if p.lowest_price >= min_p]
@@ -511,6 +526,104 @@ def delete_price_alert(alert_id):
         db.session.commit()
         flash("Price alert removed.", "info")
     return redirect(request.referrer or url_for('price_alerts'))
+
+@app.route('/builder')
+def pc_builder():
+    """
+    RigRate PC Part Compatibility Builder & Lowest Price Calculator across 5 major retailers.
+    """
+    from catalog_data import detect_subcomponent_from_query, CURATED_PRODUCTS
+    pc_cat = Category.query.filter_by(name='PC Components').first()
+    
+    # Check if any new curated products need inserting
+    for pdata in CURATED_PRODUCTS:
+        if pdata.get('category') == 'PC Components' and not Product.query.filter_by(name=pdata['name']).first():
+            PriceScraperEngine.insert_products_batch([pdata], db.session)
+
+    products = Product.query.filter_by(category_id=pc_cat.id).all() if pc_cat else []
+
+    components_by_type = {
+        'CPU': [],
+        'Motherboard': [],
+        'GPU': [],
+        'RAM': [],
+        'SSD': [],
+        'PSU': [],
+        'Cooling': [],
+        'Case': [],
+        'Monitor': []
+    }
+    
+    for p in products:
+        sub = p.specs.get('Subcomponent') or detect_subcomponent_from_query(p.name, p.name)
+        if sub in components_by_type:
+            store_prices = []
+            for pr in p.prices:
+                store_prices.append({
+                    "retailer": pr.retailer.name if pr.retailer else "Store",
+                    "slug": pr.retailer.slug if pr.retailer else "store",
+                    "price": pr.price,
+                    "url": getattr(pr, 'effective_product_url', None) or getattr(pr, 'direct_url', None) or getattr(pr, 'buy_url', '#') or "#",
+                    "is_lowest": pr.is_lowest
+                })
+            store_prices.sort(key=lambda x: x['price'])
+
+            # Estimate TDP / Wattage
+            wattage = 0
+            if sub == 'CPU':
+                tdp_str = p.specs.get('TDP') or p.specs.get('Base Power') or '120W'
+                m = re.search(r'(\d+)\s*W', str(tdp_str) + " " + p.name)
+                wattage = int(m.group(1)) if m else (170 if 'i9' in p.name or '7950' in p.name else 105)
+            elif sub == 'GPU':
+                pwr_str = p.specs.get('Power (TGP)') or p.specs.get('Power') or '285W'
+                m = re.search(r'(\d+)\s*W', str(pwr_str) + " " + p.name)
+                wattage = int(m.group(1)) if m else (450 if '4090' in p.name else (320 if '4080' in p.name else 250))
+            elif sub == 'PSU':
+                w_str = p.specs.get('Wattage') or p.name
+                m = re.search(r'(\d+)\s*(?:W|Watt)', w_str, re.IGNORECASE)
+                wattage = int(m.group(1)) if m else 850
+
+            # Socket detection
+            socket = p.specs.get('Socket') or ('AM5' if 'AM5' in p.name or '7800' in p.name or '7950' in p.name else ('LGA1700' if '14900' in p.name or '14700' in p.name or 'Z790' in p.name else 'Universal'))
+            if sub == 'Motherboard' and 'B650' in p.name:
+                socket = 'AM5'
+            elif sub == 'Motherboard' and 'Z790' in p.name:
+                socket = 'LGA1700'
+
+            components_by_type[sub].append({
+                "id": p.id,
+                "name": p.name,
+                "brand": p.brand,
+                "image": p.image,
+                "lowest_price": p.lowest_price,
+                "original_price": p.original_price,
+                "discount_pct": p.discount_percentage,
+                "rating": p.rating,
+                "wattage": wattage,
+                "socket": socket,
+                "specs": p.specs,
+                "stores": store_prices,
+                "details_url": url_for('product_details', product_id=p.id)
+            })
+
+    for k in components_by_type:
+        components_by_type[k].sort(key=lambda x: x['lowest_price'])
+
+    return render_template('builder.html', components_by_type=components_by_type)
+
+@app.route('/partners', methods=['GET', 'POST'])
+def partners():
+    """
+    Enterprise Brand & Retailer Partnerships, Merchant Feed Onboarding, and B2B Pricing API.
+    """
+    if request.method == 'POST':
+        company_name = request.form.get('company_name', '').strip()
+        contact_name = request.form.get('contact_name', '').strip()
+        email = request.form.get('email', '').strip()
+        partner_type = request.form.get('partner_type', 'Retailer Product Feed')
+        flash(f"Thank you, {contact_name or 'Partner'}! Your partnership registration for '{company_name or 'Organization'}' ({partner_type}) has been submitted. Our Enterprise Partnerships team will review your details and reach out to {email or 'your email'} within 24 hours.", "success")
+        return redirect(url_for('partners'))
+    return render_template('partners.html')
 
 @app.route('/about')
 def about():

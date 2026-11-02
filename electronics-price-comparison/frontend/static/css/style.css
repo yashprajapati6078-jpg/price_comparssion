@@ -383,10 +383,10 @@ main {
 
 /* Glassmorphism Cards */
 .card, .product-card, .category-card {
-    background: rgba(255, 255, 255, 0.9) !important;
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--ec-card-border) !important;
+    border: 1px solid var(--ec-card-border);
     box-shadow: var(--ec-shadow-sm);
     transition: var(--ec-transition);
 }
@@ -1181,6 +1181,65 @@ main {
     color: #dc2626;
     pointer-events: none;
 }
+
+/* ========================================================
+   FLAGSHIP DARK HERO & TELEMETRY CARDS (BUILDER & PARTNERS)
+   ======================================================== */
+.card-dark-hero,
+.card.card-dark-hero {
+    background: linear-gradient(135deg, #09131e 0%, #0f172a 55%, #1e293b 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.3) !important;
+}
+
+.card-dark-hero h1,
+.card-dark-hero h2,
+.card-dark-hero h3,
+.card-dark-hero h4,
+.card-dark-hero h5,
+.card-dark-hero h6 {
+    color: #ffffff !important;
+}
+
+.card-dark-hero p {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.card-dark-hero .stat-glass-card {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 1rem;
+}
+
+.card-dark-hero .stat-glass-card:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.card-builder-hero,
+.card.card-builder-hero {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 55%, #1e3a8a 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    box-shadow: 0 20px 40px rgba(13, 27, 42, 0.35) !important;
+}
+
+.card-builder-hero h1,
+.card-builder-hero h2,
+.card-builder-hero h3,
+.card-builder-hero h4,
+.card-builder-hero h5,
+.card-builder-hero h6 {
+    color: #ffffff !important;
+}
+
+.card-builder-hero p {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
 
 
 

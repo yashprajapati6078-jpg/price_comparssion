@@ -1,0 +1,626 @@
+{% extends 'base.html' %}
+
+{% block title %}RigRate PC Part Compatibility Builder - Real-Time Multi-Store Lowest Price{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb & Header -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb fs-xs text-muted mb-1">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}" class="text-decoration-none text-muted"><i class="bi bi-house me-1"></i>Home</a></li>
+            <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">PC Part Builder</li>
+        </ol>
+    </nav>
+
+    <!-- Builder Header Banner -->
+    <div class="card card-builder-hero border-0 rounded-4 overflow-hidden mb-4 text-white position-relative shadow-lg" style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 55%, #1e3a8a 100%) !important;">
+        <div class="card-body p-4 p-lg-5 position-relative z-1">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill mb-3 border border-white border-opacity-20" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(8px);">
+                        <span class="badge bg-warning text-dark fw-bold rounded-pill"><i class="bi bi-cpu-fill me-1"></i>BUILDER 2.0</span>
+                        <span class="fs-xs fw-semibold text-white">Smart Hardware Compatibility & Multi-Store Price Engine</span>
+                    </div>
+                    <h1 class="display-6 fw-extrabold mb-2 text-white" style="letter-spacing: -0.5px; color: #ffffff !important;">
+                        Custom PC Compatibility <span class="text-warning">Builder</span>
+                    </h1>
+                    <p class="fs-6 mb-0 text-white" style="max-width: 680px; line-height: 1.6; color: rgba(255, 255, 255, 0.88) !important;">
+                        Select your components, automatically verify socket & power compatibility, and calculate the cheapest combined build cost across <strong>Amazon, Flipkart, Croma, Reliance Digital</strong> & <strong>Vijay Sales</strong>.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <!-- Preset Build Quick Pick -->
+                    <div class="p-3 rounded-4 border border-white border-opacity-20 text-start shadow-sm" style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px);">
+                        <span class="fs-xs text-uppercase fw-bold text-warning d-block mb-2"><i class="bi bi-stars me-1"></i>Quick Preset Builds</span>
+                        <div class="d-flex flex-column gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-light text-start d-flex justify-content-between align-items-center rounded-3 px-3 py-2 border-white border-opacity-25" onclick="loadPreset('budget')">
+                                <span class="text-white"><i class="bi bi-controller text-info me-2"></i>1080p Esports Beast</span>
+                                <span class="badge bg-success">~₹60,000</span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-light text-start d-flex justify-content-between align-items-center rounded-3 px-3 py-2 border-white border-opacity-25" onclick="loadPreset('sweetspot')">
+                                <span class="text-white"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>1440p High-FPS Sweetspot</span>
+                                <span class="badge bg-success">~₹1,35,000</span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-light text-start d-flex justify-content-between align-items-center rounded-3 px-3 py-2 border-white border-opacity-25" onclick="loadPreset('enthusiast')">
+                                <span class="text-white"><i class="bi bi-trophy-fill text-warning me-2"></i>4K Ultra RTX 4090 Monster</span>
+                                <span class="badge bg-success">~₹3,20,000</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live System Telemetry Sticky Banner -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white sticky-top" style="top: 75px; z-index: 1020;">
+        <div class="card-body p-3 p-md-4">
+            <div class="row align-items-center g-3">
+                <!-- Compatibility Status -->
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <div id="compat-icon" class="fs-2 text-success"><i class="bi bi-check-circle-fill"></i></div>
+                        <div>
+                            <span class="fs-xxs text-uppercase fw-bold text-muted d-block">Compatibility Check</span>
+                            <span id="compat-status" class="fw-bold text-dark fs-sm">All components compatible</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estimated Wattage Bar -->
+                <div class="col-md-4 border-start border-end">
+                    <div class="px-md-2">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fs-xxs text-uppercase fw-bold text-muted"><i class="bi bi-lightning-charge me-1"></i>Est. Power Draw</span>
+                            <span id="wattage-text" class="fw-bold text-primary fs-sm">0W / Recommended: 650W PSU</span>
+                        </div>
+                        <div class="progress" style="height: 7px;">
+                            <div id="wattage-bar" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: 15%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Combined Total Price & Action -->
+                <div class="col-md-4 text-md-end">
+                    <div class="d-inline-flex align-items-center gap-3">
+                        <div class="text-end">
+                            <span class="fs-xxs text-uppercase fw-bold text-muted d-block">Cheapest Combined Cost</span>
+                            <span id="total-build-price" class="fs-4 fw-extrabold text-success">₹0</span>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="copyBuildMarkdown()" title="Copy Reddit/Discord Spec List">
+                                <i class="bi bi-share me-1"></i>Share
+                            </button>
+                            <button class="btn btn-danger btn-sm rounded-pill px-3 ms-1" onclick="resetBuilder()" title="Clear All Parts">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Builder Grid -->
+    <div class="row g-4">
+        <!-- Left: Hardware Component Slots -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-motherboard me-2 text-primary"></i>Rig Components</h5>
+                    <span class="badge bg-light text-muted border rounded-pill fs-xs">8 Core Slots</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light fs-xs text-uppercase text-muted">
+                                <tr>
+                                    <th style="width: 140px;" class="ps-4">Component</th>
+                                    <th>Selection</th>
+                                    <th style="width: 130px;">Best Price</th>
+                                    <th style="width: 130px;">Store</th>
+                                    <th style="width: 110px;" class="text-end pe-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="builder-slots-tbody">
+                                <!-- CPU Slot -->
+                                <tr id="slot-row-CPU">
+                                    <td class="ps-4 fw-bold fs-sm text-muted"><i class="bi bi-cpu text-primary me-2"></i>Processor (CPU)</td>
+                                    <td id="slot-content-CPU" class="text-muted fs-sm"><em>No CPU selected</em></td>
+                                    <td id="slot-price-CPU" class="fw-bold text-dark">-</td>
+                                    <td id="slot-store-CPU">-</td>
+                                    <td class="text-end pe-4"><button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openPartModal('CPU')">+ Choose</button></td>
+                                </tr>
+                                <!-- CPU Cooler Slot -->
+                                <tr id="slot-row-Cooling">
+                                    <td class="ps-4 fw-bold fs-sm text-muted"><i class="bi bi-fan text-info me-2"></i>CPU Cooler</td>
+                                    <td id="slot-content-Cooling" class="text-muted fs-sm"><em>Stock Cooler or Select AIO</em></td>
+                                    <td id="slot-price-Cooling" class="fw-bold text-dark">-</td>
+                                    <td id="slot-store-Cooling">-</td>
+                                    <td class="text-end pe-4"><button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openPartModal('Cooling')">+ Choose</button></td>
+                                </tr>
+                                <!-- Motherboard Slot -->
+                                <tr id="slot-row-Motherboard">
+                                    <td class="ps-4 fw-bold fs-sm text-muted"><i class="bi bi-gpu-card text-success me-2"></i>Motherboard</td>
+                                    <td id="slot-content-Motherboard" class="text-muted fs-sm"><em>No Motherboard selected</em></td>
+                                    <td id="slot-price-Motherboard" class="fw-bold text-dark">-</td>
+                                    <td id="slot-store-Motherboard">-</td>
+                                    <td class="text-end pe-4"><button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openPartModal('Motherboard')">+ Choose</button></td>
+                                </tr>
+                                <!-- Memory / RAM Slot -->
+                                <tr id="slot-row-RAM">
+                                    <td class="ps-4 fw-bold fs-sm text-muted"><i class="bi bi-memory text-warning me-2"></i>Memory (RAM)</td>
+                                    <td id="slot-content-RAM" class="text-muted fs-sm"><em>No RAM selected</em></td>
+                                    <td id="slot-price-RAM" class="fw-bold text-dark">-</td>
+                                    <td id="slot-store-RAM">-</td>
+                                    <td class="text-end pe-4"><button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openPartModal('RAM')">+ Choose</button></td>
+                                </tr>
+                                <!-- Storage / SSD Slot -->
+                                <tr id="slot-row-SSD">
+                                    <td class="ps-4 fw-bold fs-sm text-muted"><i class="bi bi-hdd-network text-secondary me-2"></i>Storage (NVMe)</td>
+                                    <td id="slot-content-SSD" class="text-muted fs-sm"><em>No SSD selected</em></td>
+                                    <td id="slot-price-SSD" class="fw-bold text-dark">-</td>
+                                    <td id="slot-store-SSD">-</td>
+                                    <td class="text-end pe-4"><button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openPartModal('SSD')">+ Choose</button></td>
+                                </tr>
+                                <!-- Video Card / GPU Slot -->
+                                <tr id="slot-row-GPU">
+                                    <td class="ps-4 fw-bold fs-sm text-muted"><i class="bi bi-display text-danger me-2"></i>Graphics (GPU)</td>
+                                    <td id="slot-content-GPU" class="text-muted fs-sm"><em>No GPU selected</em></td>
+                                    <td id="slot-price-GPU" class="fw-bold text-dark">-</td>
+                                    <td id="slot-store-GPU">-</td>
+                                    <td class="text-end pe-4"><button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openPartModal('GPU')">+ Choose</button></td>
+                                </tr>
+                                <!-- Case / Cabinet Slot -->
+                                <tr id="slot-row-Case">
+                                    <td class="ps-4 fw-bold fs-sm text-muted"><i class="bi bi-box-seam text-dark me-2"></i>PC Cabinet</td>
+                                    <td id="slot-content-Case" class="text-muted fs-sm"><em>No Case selected</em></td>
+                                    <td id="slot-price-Case" class="fw-bold text-dark">-</td>
+                                    <td id="slot-store-Case">-</td>
+                                    <td class="text-end pe-4"><button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openPartModal('Case')">+ Choose</button></td>
+                                </tr>
+                                <!-- Power Supply / PSU Slot -->
+                                <tr id="slot-row-PSU">
+                                    <td class="ps-4 fw-bold fs-sm text-muted"><i class="bi bi-plug-fill text-warning me-2"></i>Power Supply</td>
+                                    <td id="slot-content-PSU" class="text-muted fs-sm"><em>No PSU selected</em></td>
+                                    <td id="slot-price-PSU" class="fw-bold text-dark">-</td>
+                                    <td id="slot-store-PSU">-</td>
+                                    <td class="text-end pe-4"><button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openPartModal('PSU')">+ Choose</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Multi-Store Comparison Breakdown & Savings Widget -->
+        <div class="col-lg-4">
+            <!-- Multi-Store Price Ticker Card -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-white py-3 px-4 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-shop me-2 text-primary"></i>Store Price Breakdown</h6>
+                </div>
+                <div class="card-body p-4">
+                    <p class="fs-xs text-muted mb-3">Comparing cumulative cart total if you purchased all selected parts exclusively from a single store vs. our <strong>Smart Combo</strong>:</p>
+                    
+                    <div class="d-flex flex-column gap-2 mb-3">
+                        <div class="d-flex justify-content-between align-items-center p-2.5 rounded-3 bg-success-subtle border border-success-subtle">
+                            <span class="fw-bold text-success fs-sm"><i class="bi bi-lightning-fill me-1"></i>RigRate Smart Combo</span>
+                            <span id="breakdown-combo-price" class="fw-extrabold text-success fs-sm">₹0</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light border">
+                            <span class="fs-sm fw-medium text-dark"><i class="bi bi-bag-check-fill text-warning me-1.5"></i>Amazon Total</span>
+                            <span id="breakdown-amazon-price" class="fw-bold text-secondary fs-sm">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light border">
+                            <span class="fs-sm fw-medium text-dark"><i class="bi bi-cart-fill text-primary me-1.5"></i>Flipkart Total</span>
+                            <span id="breakdown-flipkart-price" class="fw-bold text-secondary fs-sm">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light border">
+                            <span class="fs-sm fw-medium text-dark"><i class="bi bi-laptop text-success me-1.5"></i>Croma Total</span>
+                            <span id="breakdown-croma-price" class="fw-bold text-secondary fs-sm">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light border">
+                            <span class="fs-sm fw-medium text-dark"><i class="bi bi-plug-fill text-danger me-1.5"></i>Reliance Digital</span>
+                            <span id="breakdown-reliance-price" class="fw-bold text-secondary fs-sm">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center p-2 rounded-3 bg-light border">
+                            <span class="fs-sm fw-medium text-dark"><i class="bi bi-tag-fill text-info me-1.5"></i>Vijay Sales</span>
+                            <span id="breakdown-vijaysales-price" class="fw-bold text-secondary fs-sm">-</span>
+                        </div>
+                    </div>
+
+                    <div id="savings-badge-box" class="p-3 rounded-3 bg-warning-subtle border border-warning-subtle text-center mb-3 d-none">
+                        <span class="fs-xs text-uppercase fw-bold text-warning-emphasis d-block mb-1">🔥 Optimization Benefit</span>
+                        <span id="savings-badge-text" class="fw-bold text-dark fs-sm">Save up to ₹0 by split-purchasing across lowest stores!</span>
+                    </div>
+
+                    <!-- Direct Buy All Trigger -->
+                    <div id="buy-links-container" class="d-grid gap-2">
+                        <button class="btn btn-primary rounded-pill fw-bold py-2.5 shadow-sm" onclick="openAllLowestStoreLinks()">
+                            <i class="bi bi-cart-check-fill me-1"></i>Purchase Parts at Lowest Stores
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brand Partnerships & Hardware OEM Banner -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden p-4 bg-light border text-center">
+                <span class="badge bg-primary text-white rounded-pill px-3 py-1 fs-xxs fw-bold mx-auto mb-2">FOR HARDWARE BRANDS</span>
+                <h6 class="fw-bold text-dark mb-1">Are you an OEM or Retailer?</h6>
+                <p class="fs-xs text-muted mb-3">Partner with RigRate to sponsor pre-builds, index your inventory feeds, and showcase your hardware directly to high-intent PC builders.</p>
+                <a href="{{ url_for('partners') }}" class="btn btn-outline-dark btn-sm rounded-pill fw-bold px-3">
+                    Explore Enterprise Partnerships <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Component Selector -->
+<div class="modal fade" id="partSelectorModal" tabindex="-1" aria-labelledby="partSelectorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-bottom py-3 px-4">
+                <div class="d-flex align-items-center gap-2">
+                    <span id="modal-category-badge" class="badge bg-primary rounded-pill px-3 py-1.5 fs-xs">Component</span>
+                    <h5 class="modal-title fw-bold text-dark mb-0" id="partSelectorModalLabel">Select Hardware</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Search & Filters inside modal -->
+                <div class="input-group mb-3">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" id="modal-search-input" class="form-control border-start-0 shadow-none" placeholder="Filter by brand or model name..." onkeyup="filterModalParts()">
+                </div>
+
+                <div id="modal-parts-list" class="d-flex flex-column gap-3">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// JSON payload of all PC Components by slot
+const RAW_COMPONENTS = {{ components_by_type|tojson }};
+
+// Currently selected components
+let selectedBuild = {
+    'CPU': null,
+    'Cooling': null,
+    'Motherboard': null,
+    'RAM': null,
+    'SSD': null,
+    'GPU': null,
+    'Case': null,
+    'PSU': null
+};
+
+let currentModalSlot = 'CPU';
+
+// Modal opener
+function openPartModal(slotKey) {
+    currentModalSlot = slotKey;
+    document.getElementById('partSelectorModalLabel').textContent = `Select ${slotKey}`;
+    document.getElementById('modal-category-badge').textContent = slotKey;
+    document.getElementById('modal-search-input').value = '';
+    renderModalList(RAW_COMPONENTS[slotKey] || []);
+    const modalEl = new bootstrap.Modal(document.getElementById('partSelectorModal'));
+    modalEl.show();
+}
+
+function filterModalParts() {
+    const q = document.getElementById('modal-search-input').value.toLowerCase();
+    const parts = RAW_COMPONENTS[currentModalSlot] || [];
+    const filtered = parts.filter(p => p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q));
+    renderModalList(filtered);
+}
+
+function renderModalList(parts) {
+    const listEl = document.getElementById('modal-parts-list');
+    listEl.innerHTML = '';
+
+    if (!parts || parts.length === 0) {
+        listEl.innerHTML = `<div class="text-center py-4 text-muted"><i class="bi bi-inbox fs-2 d-block mb-2"></i>No matching components found for this slot.</div>`;
+        return;
+    }
+
+    parts.forEach(part => {
+        const item = document.createElement('div');
+        item.className = 'card border rounded-3 p-3 hover-shadow transition-all';
+        item.style.cursor = 'pointer';
+
+        let storeBadges = '';
+        if (part.stores && part.stores.length > 0) {
+            storeBadges = part.stores.map(s => `
+                <span class="badge ${s.is_lowest ? 'bg-success text-white' : 'bg-light text-dark border'} fs-xxs">
+                    ${s.retailer}: ₹${s.price.toLocaleString('en-IN')}
+                </span>
+            `).join(' ');
+        }
+
+        item.innerHTML = `
+            <div class="d-flex align-items-center gap-3">
+                <img src="${part.image}" alt="${part.name}" class="rounded-3" style="width: 70px; height: 70px; object-fit: contain;">
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-secondary-subtle text-secondary fw-semibold fs-xxs">${part.brand}</span>
+                        ${part.socket ? `<span class="badge bg-info-subtle text-info fw-semibold fs-xxs">Socket: ${part.socket}</span>` : ''}
+                        ${part.wattage ? `<span class="badge bg-warning-subtle text-warning-emphasis fw-semibold fs-xxs">${part.wattage}W</span>` : ''}
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1 fs-sm">${part.name}</h6>
+                    <div class="d-flex flex-wrap gap-1 mt-1">
+                        ${storeBadges}
+                    </div>
+                </div>
+                <div class="text-end">
+                    <span class="fs-xs text-muted d-block">Lowest Price</span>
+                    <span class="fs-5 fw-extrabold text-success d-block mb-2">₹${part.lowest_price.toLocaleString('en-IN')}</span>
+                    <button class="btn btn-primary btn-sm rounded-pill px-3 fw-bold" onclick="selectComponent('${currentModalSlot}', ${part.id})">Select</button>
+                </div>
+            </div>
+        `;
+        listEl.appendChild(item);
+    });
+}
+
+function selectComponent(slotKey, partId) {
+    const part = (RAW_COMPONENTS[slotKey] || []).find(p => p.id === partId);
+    if (!part) return;
+
+    selectedBuild[slotKey] = part;
+
+    // Close modal
+    const modalEl = bootstrap.Modal.getInstance(document.getElementById('partSelectorModal'));
+    if (modalEl) modalEl.hide();
+
+    updateBuilderUI();
+}
+
+function removeComponent(slotKey) {
+    selectedBuild[slotKey] = null;
+    updateBuilderUI();
+}
+
+function updateBuilderUI() {
+    let totalComboPrice = 0;
+    let totalWattage = 75; // Baseline motherboard, fans, chipset
+    let cpuSocket = null;
+    let moboSocket = null;
+    let psuWattage = 0;
+
+    const storeTotals = {
+        'amazon': 0,
+        'flipkart': 0,
+        'croma': 0,
+        'reliance': 0,
+        'vijaysales': 0
+    };
+
+    for (const [slot, part] of Object.entries(selectedBuild)) {
+        const contentEl = document.getElementById(`slot-content-${slot}`);
+        const priceEl = document.getElementById(`slot-price-${slot}`);
+        const storeEl = document.getElementById(`slot-store-${slot}`);
+        const rowEl = document.getElementById(`slot-row-${slot}`);
+
+        if (part) {
+            totalComboPrice += part.lowest_price;
+
+            // Find lowest store
+            let lowestStoreName = 'Best Store';
+            if (part.stores && part.stores.length > 0) {
+                const lowestStore = part.stores.find(s => s.is_lowest) || part.stores[0];
+                lowestStoreName = lowestStore.retailer;
+
+                // Add to storeTotals if present
+                part.stores.forEach(s => {
+                    if (storeTotals[s.slug] !== undefined) {
+                        storeTotals[s.slug] += s.price;
+                    }
+                });
+            }
+
+            if (slot === 'CPU') {
+                totalWattage += (part.wattage || 105);
+                cpuSocket = part.socket;
+            } else if (slot === 'GPU') {
+                totalWattage += (part.wattage || 250);
+            } else if (slot === 'Motherboard') {
+                moboSocket = part.socket;
+            } else if (slot === 'PSU') {
+                psuWattage = part.wattage || 750;
+            }
+
+            contentEl.innerHTML = `
+                <div class="d-flex align-items-center gap-2">
+                    <img src="${part.image}" style="width: 40px; height: 40px; object-fit: contain;" class="rounded border p-1 bg-white">
+                    <div>
+                        <span class="fw-bold text-dark fs-sm d-block text-truncate" style="max-width: 280px;">${part.name}</span>
+                        <small class="text-muted fs-xxs">${part.brand} ${part.socket ? '| ' + part.socket : ''}</small>
+                    </div>
+                </div>
+            `;
+            priceEl.innerHTML = `<span class="text-success fs-sm">₹${part.lowest_price.toLocaleString('en-IN')}</span>`;
+            storeEl.innerHTML = `<span class="badge bg-light text-dark border fs-xxs">${lowestStoreName}</span>`;
+            rowEl.querySelector('.text-end').innerHTML = `
+                <button class="btn btn-sm btn-outline-danger rounded-pill px-2.5" onclick="removeComponent('${slot}')" title="Remove part">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            `;
+        } else {
+            contentEl.innerHTML = `<em class="text-muted fs-sm">No ${slot} selected</em>`;
+            priceEl.innerHTML = `-`;
+            storeEl.innerHTML = `-`;
+            rowEl.querySelector('.text-end').innerHTML = `
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="openPartModal('${slot}')">+ Choose</button>
+            `;
+        }
+    }
+
+    // Update Telemetry Price
+    document.getElementById('total-build-price').textContent = `₹${totalComboPrice.toLocaleString('en-IN')}`;
+    document.getElementById('breakdown-combo-price').textContent = `₹${totalComboPrice.toLocaleString('en-IN')}`;
+
+    // Update Store Breakdown Totals
+    ['amazon', 'flipkart', 'croma', 'reliance', 'vijaysales'].forEach(slug => {
+        const el = document.getElementById(`breakdown-${slug}-price`);
+        if (storeTotals[slug] > 0) {
+            el.textContent = `₹${storeTotals[slug].toLocaleString('en-IN')}`;
+        } else {
+            el.textContent = `-`;
+        }
+    });
+
+    // Update Wattage Bar
+    const recPsu = Math.ceil((totalWattage * 1.35) / 50) * 50; // 35% headroom rounded to 50W
+    document.getElementById('wattage-text').textContent = `${totalWattage}W / Recommended: ${Math.max(recPsu, 550)}W PSU`;
+    const wattPercent = Math.min(Math.round((totalWattage / (psuWattage || 1000)) * 100), 100);
+    const wattBar = document.getElementById('wattage-bar');
+    wattBar.style.width = `${Math.max(wattPercent, 10)}%`;
+    if (psuWattage > 0 && totalWattage > psuWattage) {
+        wattBar.className = 'progress-bar bg-danger progress-bar-striped progress-bar-animated';
+    } else {
+        wattBar.className = 'progress-bar bg-success progress-bar-striped progress-bar-animated';
+    }
+
+    // Compatibility Evaluation
+    const compatStatus = document.getElementById('compat-status');
+    const compatIcon = document.getElementById('compat-icon');
+    let warnings = [];
+
+    if (cpuSocket && moboSocket && cpuSocket !== moboSocket && cpuSocket !== 'Universal' && moboSocket !== 'Universal') {
+        warnings.push(`Socket mismatch: CPU is ${cpuSocket} but Motherboard is ${moboSocket}!`);
+    }
+    if (psuWattage > 0 && totalWattage > psuWattage) {
+        warnings.push(`PSU wattage (${psuWattage}W) is lower than estimated load (${totalWattage}W)!`);
+    }
+
+    if (warnings.length > 0) {
+        compatIcon.className = 'fs-2 text-danger';
+        compatIcon.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i>';
+        compatStatus.textContent = warnings.join(' | ');
+        compatStatus.className = 'fw-bold text-danger fs-sm';
+    } else {
+        compatIcon.className = 'fs-2 text-success';
+        compatIcon.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+        compatStatus.textContent = totalComboPrice > 0 ? 'All selected components are 100% compatible' : 'Select components to run compatibility checks';
+        compatStatus.className = 'fw-bold text-dark fs-sm';
+    }
+
+    // Savings Calculation
+    const validStoreTotals = Object.values(storeTotals).filter(v => v >= totalComboPrice && v > 0);
+    const savingsBox = document.getElementById('savings-badge-box');
+    if (validStoreTotals.length > 0 && totalComboPrice > 0) {
+        const highestSingleStore = Math.max(...validStoreTotals);
+        const savings = highestSingleStore - totalComboPrice;
+        if (savings > 500) {
+            savingsBox.classList.remove('d-none');
+            document.getElementById('savings-badge-text').textContent = `Save ₹${savings.toLocaleString('en-IN')} by purchasing parts from the lowest stores vs single-store carts!`;
+        } else {
+            savingsBox.classList.add('d-none');
+        }
+    } else {
+        savingsBox.classList.add('d-none');
+    }
+}
+
+function resetBuilder() {
+    selectedBuild = {
+        'CPU': null,
+        'Cooling': null,
+        'Motherboard': null,
+        'RAM': null,
+        'SSD': null,
+        'GPU': null,
+        'Case': null,
+        'PSU': null
+    };
+    updateBuilderUI();
+}
+
+function loadPreset(presetName) {
+    resetBuilder();
+    const cpus = RAW_COMPONENTS['CPU'] || [];
+    const mobos = RAW_COMPONENTS['Motherboard'] || [];
+    const gpus = RAW_COMPONENTS['GPU'] || [];
+    const rams = RAW_COMPONENTS['RAM'] || [];
+    const ssds = RAW_COMPONENTS['SSD'] || [];
+    const psus = RAW_COMPONENTS['PSU'] || [];
+    const coolers = RAW_COMPONENTS['Cooling'] || [];
+    const cases = RAW_COMPONENTS['Case'] || [];
+
+    if (presetName === 'budget') {
+        selectedBuild['CPU'] = cpus.find(p => p.name.includes('14700') || p.name.includes('7800')) || cpus[0];
+        selectedBuild['Motherboard'] = mobos.find(p => p.name.includes('B650') || p.name.includes('Z790')) || mobos[0];
+        selectedBuild['RAM'] = rams[0];
+        selectedBuild['SSD'] = ssds[0];
+        selectedBuild['GPU'] = gpus.find(p => p.name.includes('4070') || p.name.includes('7900')) || gpus[gpus.length - 1];
+        selectedBuild['PSU'] = psus.find(p => p.name.includes('850') || p.name.includes('650')) || psus[0];
+        selectedBuild['Case'] = cases[0] || null;
+    } else if (presetName === 'sweetspot') {
+        selectedBuild['CPU'] = cpus.find(p => p.name.includes('7800X3D')) || cpus[0];
+        selectedBuild['Motherboard'] = mobos.find(p => p.name.includes('B650')) || mobos[0];
+        selectedBuild['RAM'] = rams.find(p => p.name.includes('Trident') || p.name.includes('32GB')) || rams[0];
+        selectedBuild['SSD'] = ssds.find(p => p.name.includes('990 Pro') || p.name.includes('SN850X')) || ssds[0];
+        selectedBuild['GPU'] = gpus.find(p => p.name.includes('4070 Ti') || p.name.includes('7900 XTX')) || gpus[0];
+        selectedBuild['PSU'] = psus.find(p => p.name.includes('850') || p.name.includes('1000')) || psus[0];
+        selectedBuild['Cooling'] = coolers[0] || null;
+        selectedBuild['Case'] = cases.find(p => p.name.includes('H5 Flow') || p.name.includes('O11')) || cases[0];
+    } else if (presetName === 'enthusiast') {
+        selectedBuild['CPU'] = cpus.find(p => p.name.includes('14900K') || p.name.includes('7950X3D')) || cpus[0];
+        selectedBuild['Motherboard'] = mobos.find(p => p.name.includes('Z790') || p.name.includes('Hero')) || mobos[0];
+        selectedBuild['RAM'] = rams.find(p => p.name.includes('64GB')) || rams[0];
+        selectedBuild['SSD'] = ssds.find(p => p.name.includes('990 Pro')) || ssds[0];
+        selectedBuild['GPU'] = gpus.find(p => p.name.includes('4090')) || gpus[0];
+        selectedBuild['PSU'] = psus.find(p => p.name.includes('1000')) || psus[0];
+        selectedBuild['Cooling'] = coolers.find(p => p.name.includes('Kraken')) || coolers[0];
+        selectedBuild['Case'] = cases.find(p => p.name.includes('O11')) || cases[0];
+    }
+    updateBuilderUI();
+}
+
+function copyBuildMarkdown() {
+    let md = `**RigRate Custom PC Build Specifications**\n\n`;
+    let total = 0;
+    for (const [slot, part] of Object.entries(selectedBuild)) {
+        if (part) {
+            md += `- **${slot}**: ${part.name} — ₹${part.lowest_price.toLocaleString('en-IN')}\n`;
+            total += part.lowest_price;
+        }
+    }
+    md += `\n**Total Optimized Cost**: ₹${total.toLocaleString('en-IN')}\n`;
+    md += `*Generated via RigRate PC Price Comparison Engine: https://price-comparssion-2.onrender.com/builder*`;
+
+    navigator.clipboard.writeText(md).then(() => {
+        alert("Build copied to clipboard in Markdown! You can paste it into Reddit (r/IndianGaming), Discord, or WhatsApp.");
+    }).catch(err => {
+        console.error(err);
+    });
+}
+
+function openAllLowestStoreLinks() {
+    let opened = 0;
+    for (const [slot, part] of Object.entries(selectedBuild)) {
+        if (part && part.stores && part.stores.length > 0) {
+            const lowest = part.stores.find(s => s.is_lowest) || part.stores[0];
+            if (lowest.url && lowest.url !== '#') {
+                window.open(lowest.url, '_blank');
+                opened++;
+            }
+        }
+    }
+    if (opened === 0) {
+        alert("Please select components first to view store purchasing links.");
+    }
+}
+
+// Initial update on page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateBuilderUI();
+});
+</script>
+{% endblock %}

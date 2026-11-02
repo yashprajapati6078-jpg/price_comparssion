@@ -54,6 +54,14 @@ class PriceScraperEngine:
 
         extracted_prices = api_result.get("prices", [])
         if not extracted_prices:
+            if api_result.get("verified"):
+                return {
+                    "success": True,
+                    "error": None,
+                    "source": api_result.get("source", "Store Link Verifier"),
+                    "prices_updated": len(product.prices),
+                    "message": "Verified: Current retailer prices and direct store links are active and up to date."
+                }
             return {
                 "success": False,
                 "error": "No valid prices returned by the external API.",

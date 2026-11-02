@@ -66,6 +66,14 @@
                         </a>
                     </li>
 
+                    <!-- PC Compatibility Builder Flagship Link -->
+                    <li class="nav-item">
+                        <a class="nav-link d-inline-flex align-items-center fw-bold text-dark {% if request.endpoint == 'pc_builder' %}active text-primary{% endif %}" href="{{ url_for('pc_builder') }}">
+                            <i class="bi bi-tools me-1 text-primary"></i><span>PC Builder</span>
+                            <span class="badge bg-warning text-dark rounded-pill ms-1 fs-xxs">NEW</span>
+                        </a>
+                    </li>
+
                     <!-- Categories Dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-inline-flex align-items-center {% if request.endpoint == 'search' and not request.args.get('q') %}active{% endif %}" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -106,6 +114,12 @@
                     <li class="nav-item">
                         <a class="nav-link d-inline-flex align-items-center {% if request.endpoint == 'about' %}active{% endif %}" href="{{ url_for('about') }}">
                             <i class="bi bi-info-circle me-1 text-secondary"></i><span>About</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link d-inline-flex align-items-center {% if request.endpoint == 'partners' %}active{% endif %}" href="{{ url_for('partners') }}">
+                            <i class="bi bi-briefcase me-1 text-secondary"></i><span>Partners</span>
                         </a>
                     </li>
 
@@ -245,6 +259,17 @@
                         <span>Live Price Drops Tracker</span>
                     </a>
 
+                    <a href="{{ url_for('pc_builder') }}" class="offcanvas-item-link text-primary fw-bold">
+                        <i class="bi bi-tools me-2 text-warning fs-5"></i>
+                        <span>PC Compatibility Builder</span>
+                        <span class="badge bg-warning text-dark rounded-pill ms-auto fs-xxs">NEW</span>
+                    </a>
+
+                    <a href="{{ url_for('partners') }}" class="offcanvas-item-link">
+                        <i class="bi bi-briefcase me-2 text-secondary fs-5"></i>
+                        <span>For Brands & Retailers</span>
+                    </a>
+
                     <a href="{{ url_for('about') }}" class="offcanvas-item-link">
                         <i class="bi bi-info-circle me-2 text-secondary fs-5"></i>
                         <span>About Us</span>
@@ -345,6 +370,8 @@
                     <h6 class="text-uppercase mb-3 fw-bold text-white">Quick Links</h6>
                     <ul class="list-unstyled d-flex flex-column gap-2 fs-sm text-secondary">
                         <li><a href="{{ url_for('home') }}" class="text-secondary text-decoration-none">Home</a></li>
+                        <li><a href="{{ url_for('pc_builder') }}" class="text-warning fw-bold text-decoration-none"><i class="bi bi-tools me-1"></i>PC Part Builder</a></li>
+                        <li><a href="{{ url_for('partners') }}" class="text-secondary text-decoration-none"><i class="bi bi-briefcase me-1"></i>Brand & Retailer Portal</a></li>
                         <li><a href="{{ url_for('search') }}" class="text-secondary text-decoration-none">All Products</a></li>
                         <li><a href="{{ url_for('about') }}" class="text-secondary text-decoration-none">About Us</a></li>
                         <li><a href="{{ url_for('contact') }}" class="text-secondary text-decoration-none">Contact Us</a></li>

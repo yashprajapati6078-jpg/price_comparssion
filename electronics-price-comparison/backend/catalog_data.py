@@ -676,6 +676,75 @@ CURATED_PRODUCTS = [
             {"retailer": "flipkart", "price": 18990, "delivery": "Free Express Delivery"}
         ]
     },
+    {
+        "name": "MSI MAG A850GL PCIE5 850W 80+ Gold Fully Modular Power Supply",
+        "brand": "MSI",
+        "category": "PC Components",
+        "subcomponent": "PSU",
+        "image": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80",
+        "gallery": ["https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80"],
+        "rating": 4.8,
+        "review_count": 620,
+        "original_price": 13990,
+        "is_featured": False,
+        "is_deal": True,
+        "colors": ["Black"],
+        "storage_options": ["850W ATX 3.0"],
+        "description": "850W 80+ Gold certified power supply with native 16-pin PCIe 5.0 connector for modern RTX 40-series graphics cards.",
+        "features": ["850W 80 PLUS Gold Certified", "PCIe 5.0 16-Pin Ready", "Compact 140mm size with 120mm FDB Fan"],
+        "specs": {"Wattage": "850 Watts", "Efficiency": "80 PLUS Gold", "Standard": "ATX 3.0 Ready", "Warranty": "7 Years"},
+        "prices": [
+            {"retailer": "amazon", "price": 10490, "delivery": "Free Prime Delivery"},
+            {"retailer": "flipkart", "price": 10990, "delivery": "Free Express Delivery"},
+            {"retailer": "croma", "price": 11490, "delivery": "Store Pickup"}
+        ]
+    },
+
+    # --- PC Cases / Cabinets ---
+    {
+        "name": "Lian Li O11 Dynamic EVO RGB Mid-Tower Gaming Chassis",
+        "brand": "Lian Li",
+        "category": "PC Components",
+        "subcomponent": "Case",
+        "image": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80",
+        "gallery": ["https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80"],
+        "rating": 4.9,
+        "review_count": 890,
+        "original_price": 18990,
+        "is_featured": True,
+        "is_deal": True,
+        "colors": ["Black", "White"],
+        "storage_options": ["Mid-Tower Dual Chamber"],
+        "description": "Iconic showcase chassis with dual-tempered glass, reversible layout, and integrated ARGB lighting strips across top and bottom.",
+        "features": ["Dual Tempered Glass Front & Side", "Support for up to 3x 360mm Radiators", "Reversible Chassis Orientation"],
+        "specs": {"Form Factor": "Mid-Tower", "Motherboard Support": "E-ATX, ATX, Micro-ATX, Mini-ITX", "Max GPU Length": "455mm", "Max CPU Cooler Height": "167mm"},
+        "prices": [
+            {"retailer": "amazon", "price": 15490, "delivery": "Free Secured Delivery"},
+            {"retailer": "flipkart", "price": 15990, "delivery": "Free 2-Day Delivery"}
+        ]
+    },
+    {
+        "name": "NZXT H5 Flow RGB Compact ATX Mid-Tower Case",
+        "brand": "NZXT",
+        "category": "PC Components",
+        "subcomponent": "Case",
+        "image": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80",
+        "gallery": ["https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80"],
+        "rating": 4.8,
+        "review_count": 710,
+        "original_price": 10990,
+        "is_featured": False,
+        "is_deal": True,
+        "colors": ["Matte Black", "Matte White"],
+        "storage_options": ["Mid-Tower High Airflow"],
+        "description": "High-airflow mid-tower featuring perforated front panel, dedicated bottom fan angled for direct GPU cooling, and 2x F140 RGB Core fans.",
+        "features": ["Perforated Mesh Front Panel for Maximum Airflow", "Dedicated Angled GPU Intake Fan", "Intuitive Cable Management Channels"],
+        "specs": {"Form Factor": "Compact Mid-Tower", "Motherboard Support": "ATX, Micro-ATX, Mini-ITX", "Max GPU Length": "365mm"},
+        "prices": [
+            {"retailer": "amazon", "price": 8490, "delivery": "Free Prime Delivery"},
+            {"retailer": "flipkart", "price": 8790, "delivery": "Free Express Delivery"}
+        ]
+    },
 
     # --- Gaming Monitors ---
     {
@@ -879,6 +948,8 @@ def detect_subcomponent_from_query(query_text="", product_name=""):
         return "Cooling"
     if any(k in text for k in ["psu", "power supply", "watt", "1000w", "850w", "modular"]):
         return "PSU"
+    if any(k in text for k in ["case", "cabinet", "chassis", "airflow", "4000d", "h5 flow", "o11", "lian li"]):
+        return "Case"
     if any(k in text for k in ["monitor", "display", "240hz", "144hz", "oled monitor"]):
         return "Monitor"
     return "PC Part"
