@@ -14,6 +14,25 @@ app = _backend_module.app
 start_scheduler = _backend_module.start_scheduler
 seed_database = _backend_module.seed_database
 
+# Check SQLite database integrity on startup; auto-heal if corrupt
+db_path = os.path.join(backend_dir, 'electronics.db')
+if os.path.exists(db_path):
+    try:
+        import sqlite3
+        con = sqlite3.connect(db_path)
+        chk = con.execute("PRAGMA integrity_check;").fetchone()
+        con.close()
+        if not chk or chk[0] != 'ok':
+            print(f"[RigRate Warning] SQLite database corrupt ({chk}). Removing to rebuild fresh...")
+            for f in [db_path, db_path + '-wal', db_path + '-shm']:
+                if os.path.exists(f):
+                    try:
+                        os.remove(f)
+                    except Exception:
+                        pass
+    except Exception as e:
+        print(f"[RigRate Warning] Database integrity check failed: {e}")
+
 # Ensure database tables exist and initial catalog is populated when running under Gunicorn
 try:
     with app.app_context():
@@ -24,6 +43,18 @@ try:
             seed_database()
 except Exception as e:
     print(f"[RigRate Startup] Notice during DB check: {e}")
+    if "malformed" in str(e).lower() or "disk image" in str(e).lower():
+        try:
+            print("[RigRate Startup] Malformed database detected. Rebuilding cleanly...")
+            for f in [db_path, db_path + '-wal', db_path + '-shm']:
+                if os.path.exists(f):
+                    os.remove(f)
+            with app.app_context():
+                from models import db
+                db.create_all()
+                seed_database()
+        except Exception as retry_err:
+            print(f"[RigRate Startup] Re-seed failed: {retry_err}")
 
 if __name__ == '__main__':
     seed_database()

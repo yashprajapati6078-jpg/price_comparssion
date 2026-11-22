@@ -43,7 +43,6 @@ db.init_app(app)
 def set_sqlite_pragma(dbapi_connection, connection_record):
     try:
         cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA journal_mode=WAL")
         cursor.execute("PRAGMA busy_timeout=30000")
         cursor.close()
     except Exception:
@@ -196,6 +195,21 @@ def home():
                            categories=all_cats,
                            pc_spotlight_products=pc_spotlight_products,
                            popular_brands=popular_brands)
+
+@app.route('/api/repair-database')
+def api_repair_database():
+    try:
+        db_path = os.path.join(basedir, 'electronics.db')
+        for f in [db_path, db_path + '-wal', db_path + '-shm']:
+            if os.path.exists(f):
+                try:
+                    os.remove(f)
+                except Exception:
+                    pass
+        seed_database()
+        return jsonify({"success": True, "message": "Database cleanly rebuilt and seeded with 300+ products."})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/api/seed-massive-catalog')
 def seed_massive_catalog_endpoint():
