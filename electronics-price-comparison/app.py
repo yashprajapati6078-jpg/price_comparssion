@@ -9,19 +9,21 @@ backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'backend')
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
-# Avoid root directory shadowing backend app module
-root_dir = os.path.abspath(os.path.dirname(__file__))
-had_root = root_dir in sys.path
-if had_root:
-    sys.path.remove(root_dir)
-
-import app as _backend_module
+import backend.app as _backend_module
 app = _backend_module.app
 start_scheduler = _backend_module.start_scheduler
 seed_database = _backend_module.seed_database
 
-if had_root:
-    sys.path.append(root_dir)
+# Ensure database tables exist and initial catalog is populated when running under Gunicorn
+try:
+    with app.app_context():
+        from models import db, Category, Product
+        db.create_all()
+        if Category.query.count() == 0 or Product.query.count() == 0:
+            print("[RigRate Startup] Seeding initial database...")
+            seed_database()
+except Exception as e:
+    print(f"[RigRate Startup] Notice during DB check: {e}")
 
 if __name__ == '__main__':
     seed_database()
